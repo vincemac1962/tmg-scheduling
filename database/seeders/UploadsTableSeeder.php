@@ -27,9 +27,6 @@ class UploadsTableSeeder extends Seeder
             // Generate a random file name based on the resource type
             $resource_filename = $faker->lexify('???????????????') . '.' . ($resource_type == 'vid' ? 'mp4' : 'png');
 
-            // Generate a resource reference
-            $resource_ref = $resource_type . '_' . $resource_filename;
-
             // Determine the file path based on the resource type
             $resource_path = 'storage/uploads/' . ($resource_type == 'vid' ? 'mp4' : ($resource_type == 'ban' ? 'banner' : 'button')) . '/';
 
@@ -45,7 +42,6 @@ class UploadsTableSeeder extends Seeder
             DB::table('uploads')->insert([
                 'resource_type' => $resource_type,
                 'resource_filename' => $resource_filename,
-                'resource_ref' => $resource_ref,
                 'resource_path' => $resource_path,
                 'is_uploaded' => $is_uploaded,
                 'uploaded_by' => $uploaded_by,

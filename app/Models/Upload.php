@@ -14,7 +14,6 @@ class Upload extends Model
         'resource_type',
         'resource_filename',
         'resource_path',
-        'resource_ref',
         'is_uploaded',
         'uploaded_by',
         'uploaded_at',

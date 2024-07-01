@@ -15,7 +15,6 @@ class UploadFactory extends Factory
     {
         $resource_type = $this->faker->randomElement(['ban', 'btn', 'vid']);
         $resource_filename = $this->faker->lexify('???????????????') . '.' . ($resource_type == 'vid' ? 'mp4' : 'png');
-        $resource_ref = $resource_type . '_' . $resource_filename;
         $file_path = 'storage/uploads/' . ($resource_type == 'vid' ? 'mp4' : ($resource_type == 'ban' ? 'banner' : 'button')) . '/';
         $is_uploaded = $this->faker->boolean;
         $uploaded_at = $is_uploaded ? $this->faker->dateTimeThisYear : null;
@@ -23,7 +22,6 @@ class UploadFactory extends Factory
         return [
             'resource_type' => $resource_type,
             'resource_filename' => $resource_filename,
-            'resource_ref' => $resource_ref,
             'file_path' => $file_path,
             'is_uploaded' => $is_uploaded,
             'uploaded_by' => $this->faker->numberBetween(1,5),

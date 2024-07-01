@@ -38,7 +38,6 @@ class UploadTest extends TestCase
             'resource_type' => $resource_type,
             'resource_filename' => $resource_filename,
             'resource_path' => $this->getResourcePath($resource_type),
-            'resource_ref' => $resource_type . '_' . $resource_filename,
             'is_uploaded' => $faker->boolean,
             'uploaded_by' => $faker->randomElement([1, 2, 3]),
             'uploaded_at' => $faker->dateTimeThisYear,
