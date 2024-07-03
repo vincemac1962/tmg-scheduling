@@ -76,7 +76,7 @@ class ScheduleController extends Controller
     {
         $data = array(
             'header' => 'Create Schedule',
-            'userId' => auth()->id()
+            'user_id' => auth()->id()
         );
         return view('schedules.create')->with($data);
     }

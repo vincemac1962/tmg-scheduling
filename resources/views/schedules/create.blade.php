@@ -20,7 +20,7 @@
                     @enderror
                 </div>
                 <div class="flex justify-center mt-3 space-x-2">
-                    <input type="hidden" name="created_by" value="{{ $userId }}">
+                    <input type="hidden" name="created_by" value="{{ $user_id }}">
                     <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white">Submit</button>
                     <a href="{{ route('schedules.index') }}" class="px-4 py-2 rounded bg-gray-500 text-white">Cancel</a>
                 </div>

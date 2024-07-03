@@ -40,5 +40,7 @@ Route::resource('sites', App\Http\Controllers\SitesController::class);
 Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
 // Schedule Items resource route
 Route::resource('schedule_items', App\Http\Controllers\ScheduleItemController::class);
+// Advertiser resource route
+Route::resource('advertisers', App\Http\Controllers\AdvertiserController::class);
 
 require __DIR__.'/auth.php';

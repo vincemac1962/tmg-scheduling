@@ -48,8 +48,8 @@
             <div class="flex justify-center mt-4">
                 <a href="/schedules" class="w-40 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2 text-center">Back</a>
                 <a href="/schedules/{{$schedule->id}}/edit" class="w-40 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 text-center">Edit Schedule</a>
-                <a href="#" class="w-40 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mr-2 text-center">Add Item</a>
-                <a href="#" class="w-40 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded mr-2 text-center">Add Advertiser</a>
+                <a href="/schedule_items/create?schedule_id={{$schedule->id}}" class="w-40 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mr-2 text-center">Add Item</a>
+                <a href="{{ route('advertisers.create', $schedule->id) }}" class="w-40 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded mr-2 text-center">Add Advertiser</a>
                 <form action="{{ route('schedules.destroy', $schedule->id) }}" method="POST" class="mr-2">
                     @csrf
                     <input type="hidden" name="_method" value="DELETE">

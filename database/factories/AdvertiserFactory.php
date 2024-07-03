@@ -27,6 +27,7 @@ class AdvertiserFactory extends Factory
             'address_2' => $this->faker->streetAddress,
             'street' => $this->faker->streetName,
             'city' => $this->faker->city,
+            'country' => $this->faker->country,
             'phone' => $this->faker->phoneNumber,
             'mobile' => $this->faker->phoneNumber,
             'email' => $this->faker->unique()->safeEmail,
