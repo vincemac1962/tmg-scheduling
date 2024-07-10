@@ -15,6 +15,7 @@ class CreateUploadsTable extends Migration
     {
         Schema::create('uploads', function (Blueprint $table) {
             $table->id();
+            $table->integer('advertiser_id')->nullable();
             $table->string('resource_type');
             $table->string('resource_filename');
             $table->string('resource_path');

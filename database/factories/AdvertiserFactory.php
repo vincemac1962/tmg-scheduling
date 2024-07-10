@@ -36,7 +36,7 @@ class AdvertiserFactory extends Factory
             'banner' => substr(Str::slug($this->faker->company), 0, 16) . '.png',
             'button' => substr(Str::slug($this->faker->company), 0, 16) . '.png',
             'mp4' => substr(Str::slug($this->faker->company), 0, 16) . '.mp4',
-            'created_by' => User::all()->random()->id,
+            'created_by' => User::query()->exists() ? User::all()->random()->id : User::factory()->create()->id,
         ];
     }
 }

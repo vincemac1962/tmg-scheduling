@@ -45,6 +45,7 @@ class ScheduleItemFactory extends Factory
         return [
             'schedule_id' => $this->faker->randomElement($scheduleIds),
             'upload_id' => $this->faker->randomElement($uploadIds),
+            'advertiser_id' => null,
             'title' => $this->faker->sentence,
             'description' => substr($this->faker->paragraph($nbSentences = 3, $variableNbSentences = true), 0, 255),
             'start_date' => $startDate,

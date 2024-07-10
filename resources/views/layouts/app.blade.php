@@ -26,11 +26,47 @@
                     </div>
                 </header>
             @endif
+            @if(session('success'))
+                <div class="alert-success bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert" id="alert-success">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert-error bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert" id="alert-error">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
                         <!-- Page Content -->
             <main>
                 @yield('content')
             </main>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                // Set the timeout to 5 seconds (5000 milliseconds)
+                setTimeout(function() {
+                    // Select the success and error messages by class
+                    const successMessage = document.querySelector('.alert-success');
+                    const errorMessage = document.querySelector('.alert-error');
+
+                    // Check if the success message exists and hide it
+                    if (successMessage) {
+                        successMessage.style.display = 'none';
+                    }
+
+                    // Check if the error message exists and hide it
+                    if (errorMessage) {
+                        errorMessage.style.display = 'none';
+                    }
+                }, 5000); // 5000 milliseconds = 5 seconds
+            });
+        </script>
     </body>
 </html>

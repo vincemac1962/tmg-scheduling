@@ -16,6 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('schedule_id')->constrained()->onDelete('cascade');
             $table->foreignId('upload_id')->constrained()->onDelete('cascade');
+            // advertiser id is nullable or must contain a valid advertiser id
+            $table->unsignedBigInteger('advertiser_id')->nullable()->default(null);
             $table->string('title')->nullable();
             $table->string('description')->nullable();
             $table->dateTime('start_date')->nullable();
@@ -31,6 +33,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+       /* Schema::table('schedule_items', function (Blueprint $table) {
+            $table->dropForeign(['advertiser_id']);
+            $table->dropColumn('advertiser_id');
+        }); */
         Schema::dropIfExists('schedule_items');
     }
 };

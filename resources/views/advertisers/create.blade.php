@@ -3,6 +3,15 @@
 
 @section('content')
 <div class="container max-w-4xl mx-auto px-4">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form method="POST" action="{{ route('advertisers.store') }}" enctype="multipart/form-data">
     @csrf
     <div id="new_advertiser_fields">
@@ -85,11 +94,13 @@
             <input type="file" id="mp4" name="mp4" class="form-control w-3/4">
         </div>
         <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
+        <input type="hidden" id="schedule_id" name="schedule_id" value="{{ $schedule->id }}">
     </div>
-    <div class="flex justify-between items-center mt-3">
-        <button type="submit" class="btn btn-primary">Create Advertiser</button>
-        <a href="{{ url()->previous() }}" class="btn btn-secondary">Cancel</a>
-    </div>
+        <div class="flex justify-center mt-3 space-x-2">
+            <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white">Add Advertiser</button>
+            <a href="{{ route('schedules.show', $schedule->id) }}" class="px-4 py-2 rounded bg-gray-500 text-white">Cancel</a>
+        </div>
+
     </form>
 </div>
 

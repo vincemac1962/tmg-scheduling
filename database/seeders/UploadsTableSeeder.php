@@ -22,13 +22,13 @@ class UploadsTableSeeder extends Seeder
 
         foreach (range(1,20) as $index) {
             // Generate a random resource type
-            $resource_type = $faker->randomElement(['ban', 'btn', 'vid']);
+            $resource_type = $faker->randomElement(['ban', 'btn', 'mp4']);
 
             // Generate a random file name based on the resource type
-            $resource_filename = $faker->lexify('???????????????') . '.' . ($resource_type == 'vid' ? 'mp4' : 'png');
+            $resource_filename = $faker->lexify('???????????????') . '.' . ($resource_type == 'mp4' ? 'mp4' : 'png');
 
             // Determine the file path based on the resource type
-            $resource_path = 'storage/uploads/' . ($resource_type == 'vid' ? 'mp4' : ($resource_type == 'ban' ? 'banner' : 'button')) . '/';
+            $resource_path = 'storage/uploads/' . ($resource_type == 'mp4' ? 'mp4' : ($resource_type == 'ban' ? 'banner' : 'button')) . '/';
 
             // Pick a random user id
             $uploaded_by = $faker->randomElement($userIds);

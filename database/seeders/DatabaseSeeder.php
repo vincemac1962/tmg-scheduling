@@ -20,10 +20,10 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             SiteTypesTableSeeder::class,
             SitesTableSeeder::class,
-            UploadsTableSeeder::class,
             ScheduleTableSeeder::class,
-            ScheduleItemSeeder::class,
             AdvertiserSeeder::class,
+            UploadsTableSeeder::class,
+            ScheduleItemSeeder::class,
         ]);
 
 
