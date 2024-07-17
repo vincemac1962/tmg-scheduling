@@ -8,4 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Advertiser extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'contract',
+        'business_name',
+        'banner',
+        'button',
+        'mp4',
+    ];
+
+    // In Advertiser model
+    public function creator() {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

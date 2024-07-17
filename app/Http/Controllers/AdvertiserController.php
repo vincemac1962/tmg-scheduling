@@ -14,9 +14,32 @@ class AdvertiserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
+
     {
-        //
+
+        $query = Advertiser::query();
+
+        // Filtering
+        if ($request->has('filter')) {
+            $query->where('business_name', 'like', '%' . $request->filter . '%')
+                ->orWhere('contract', 'like', '%' . $request->filter . '%');
+        }
+
+        // Sorting
+        if ($request->has('sort_by')) {
+            $direction = $request->direction ?? 'asc';
+            $query->orderBy($request->sort_by, $direction);
+            $header = 'Advertiser Index - sorted by ' . $request->sort_by;
+        } else {
+            // Default sorting by updated_at if sort_by is not provided
+            $query->orderBy('updated_at', 'desc');
+            $header = 'Advertiser Index - sorted by last updated';
+        }
+        // select advertisers most recently added
+        $advertisers = $query->paginate(20);
+        //$advertisers = Advertiser::orderBy('created_at', 'desc')->paginate(20);
+        return view('advertisers.index', compact('advertisers', 'header'));
     }
 
     /**
@@ -30,68 +53,159 @@ class AdvertiserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     * @throws ValidationException
+     * Display the specified resource.
      */
+    public function show(int $id)
+    {
+        $advertiser = Advertiser::find($id);
+        $data = array(
+            'header' => 'Advertiser Details',
+            'advertiser' => $advertiser);
+        return view('advertisers.show')->with($data);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(int $id)
+    {
+        // find advertiser by id
+        $advertiser = Advertiser::find($id);
+        // get schedule id from session if it exists
+        $scheduleId = session('schedule_id');
+        $data = array(
+            'header' => 'Edit Advertiser',
+            'scheduleId' => $scheduleId,
+            'advertiser' => $advertiser);
+        return view('advertisers.edit')->with($data);
+    }
+
     public function store(Request $request)
     {
+        $advertiser = $this->saveAdvertiser($request);
+        $this->handleFileUploads($request, $advertiser);
+        if (session()->has('schedule_id')) {
+            return redirect()->route('schedules.show', ['schedule' => session('schedule_id')])
+                ->with('success', 'Advertiser created successfully.');
+        } else {
+            return redirect()->route('advertisers.index')
+                ->with('success', 'Advertiser created successfully.');
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @throws ValidationException
+     */
+    public function update(Request $request, int $id)
+    {
         try {
-            $validatedData = $request->validate([
-                'contract' => 'required|unique:advertisers,contract',
+            $advertiser = Advertiser::findOrFail($id);
+            $this->saveAdvertiser($request, $advertiser);
+        } catch (\Exception $e) {
+            // ToDo: remove next line when testing is finished
+            //Log::error('Error updating advertiser: ' . $e->getMessage());
+            throw ValidationException::withMessages(['error' => 'Error updating advertiser.']);
+        }
+
+        // ToDo: remove next line when testing is finished
+        //Log::debug('Session Data', session()->all());
+        if (session()->has('schedule_id')) {
+            return redirect()->route('schedules.show', ['schedule' => session('schedule_id')])
+                ->with('success', 'Advertiser updated successfully.');
+        } else {
+            return redirect()->route('advertisers.index')
+                ->with('success', 'Advertiser updated successfully.');
+        }
+    }
+
+
+
+    /**
+     * Stores a record.
+     * @throws ValidationException
+     */
+    private function saveAdvertiser(Request $request, Advertiser $advertiser = null)
+    {
+        $isNew = false;
+        if (!$advertiser) {
+            $advertiser = new Advertiser();
+            $isNew = true;
+        }
+
+        try {
+            $rules = [
                 'business_name' => 'required',
                 'banner' => 'file|mimes:png',
                 'button' => 'file|mimes:png',
-                'mp4' => 'required|file|mimes:mp4',
-            ]);
+            ];
+
+            // Modify the contract validation rule based on whether it's a new or existing record
+            $rules['contract'] = $isNew ? 'required|unique:advertisers,contract' : 'required|unique:advertisers,contract,' . $advertiser->id;
+
+            // Modify the mp4 validation rule based on whether it's a new or existing record
+            if ($isNew) {
+                $rules['mp4'] = 'required|file|mimes:mp4';
+            } else {
+                $rules['mp4'] = 'nullable|file|mimes:mp4';
+            }
+
+            $validatedData = $request->validate($rules);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation errors: ', $e->validator->errors()->all());
             throw $e; // rethrow the exception so that Laravel can handle it and redirect back with errors
         }
-            $advertiser = new Advertiser();
-            $advertiser->contract = $validatedData['contract'];
-            $advertiser->business_name = $validatedData['business_name'];
-            $advertiser->address_1 = $request->input('address_1', null);
-            $advertiser->address_2 = $request->input('address_2', null);
-            $advertiser->street = $request->input('street', null);
-            $advertiser->city = $request->input('city', null);
-            $advertiser->county = $request->input('county', null);
-            $advertiser->postal_code = $request->input('postal_code', null);
-            $advertiser->country = $request->input('country', null);
-            $advertiser->phone = $request->input('phone', null);
-            $advertiser->mobile = $request->input('mobile', null);
-            $advertiser->email = $request->input('email', null);
-            $advertiser->url = $request->input('url', null);
-            $advertiser->social = $request->input('social', null);
-            $advertiser->sort_order = $request->input('sort_order', 1);
-            $advertiser->is_active = true;
-            $advertiser->is_deleted = true;
-            $advertiser->created_by = auth()->id();
 
-            // Check and store the file name for banner
-            if ($request->hasFile('banner')) {
-                $advertiser->banner = $request->file('banner')->getClientOriginalName();
-            }
+        // fill the advertiser model with validated data
+        $advertiser->fill($validatedData);
+        // fill the model with additional data
+        $advertiser->address_1 = $request->input('address_1', null);
+        $advertiser->address_2 = $request->input('address_2', null);
+        $advertiser->street = $request->input('street', null);
+        $advertiser->city = $request->input('city', null);
+        $advertiser->county = $request->input('county', null);
+        $advertiser->postal_code = $request->input('postal_code', null);
+        $advertiser->country = $request->input('country', null);
+        $advertiser->phone = $request->input('phone', null);
+        $advertiser->mobile = $request->input('mobile', null);
+        $advertiser->email = $request->input('email', null);
+        $advertiser->url = $request->input('url', null);
+        $advertiser->social = $request->input('social', null);
+        $advertiser->sort_order = $request->input('sort_order', 1);
+        $advertiser->is_active = true;
+        $advertiser->is_deleted = false;
+        $advertiser->created_by = auth()->id();
 
-            // Check and store the file name for button
-            if ($request->hasFile('button')) {
-                $advertiser->button = $request->file('button')->getClientOriginalName();
-            }
+        // Check and store the file name for banner
+        if ($request->hasFile('banner')) {
+            $advertiser->banner = $request->file('banner')->getClientOriginalName();
+        }
 
-            // Check and store the file name for mp4
-            if ($request->hasFile('mp4')) {
-                $advertiser->mp4 = $request->file('mp4')->getClientOriginalName();
-            }
+        // Check and store the file name for button
+        if ($request->hasFile('button')) {
+            $advertiser->button = $request->file('button')->getClientOriginalName();
+        }
 
-            $advertiser->save();
+        // Check and store the file name for mp4
+        if ($request->hasFile('mp4')) {
+            $advertiser->mp4 = $request->file('mp4')->getClientOriginalName();
+        }
+        $advertiser->save();
 
-        // Define the paths for each file type
+        // File handling logic (omitted for brevity)
+
+        return $advertiser;
+    }
+
+    private function handleFileUploads(Request $request, Advertiser $advertiser)
+    {
         $filePaths = [
             'banner' => 'public/banner',
             'button' => 'public/button',
             'mp4' => 'public/mp4',
         ];
 
-        // Process each file input
         foreach ($filePaths as $field => $path) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
@@ -99,10 +213,8 @@ class AdvertiserController extends Controller
                 $abbreviation = $field === 'banner' ? 'ban' : ($field === 'button' ? 'btn' : 'mp4');
                 $newFilename = $advertiser->contract . '_' . $abbreviation . '_' . $originalName;
 
-                // Save the file to the determined path
                 $storagePath = $file->storeAs($path, $newFilename);
 
-                // Create an upload record
                 $upload = new Upload();
                 $upload->advertiser_id = $advertiser->id;
                 $upload->resource_type = $abbreviation;
@@ -112,45 +224,17 @@ class AdvertiserController extends Controller
                 $upload->uploaded_by = auth()->id();
                 $upload->uploaded_at = now();
                 $upload->save();
-
-                // Create a ScheduleItem record for each file uploaded
-                $scheduleItem = new \App\Models\ScheduleItem();
-                $scheduleItem->schedule_id = $request->schedule_id;
-                $scheduleItem->upload_id = $upload->id;
-                $scheduleItem->advertiser_id = $advertiser->id;
-                $scheduleItem->file = $storagePath;
-                $scheduleItem->created_by = auth()->id();
-                $scheduleItem->save();
+                if (session()->has('schedule_id')) {
+                    $scheduleItem = new \App\Models\ScheduleItem();
+                    $scheduleItem->schedule_id = $request->schedule_id;
+                    $scheduleItem->upload_id = $upload->id;
+                    $scheduleItem->advertiser_id = $advertiser->id;
+                    $scheduleItem->file = $storagePath;
+                    $scheduleItem->created_by = auth()->id();
+                    $scheduleItem->save();
+                }
             }
         }
-
-        return redirect()->route('schedules.show', ['schedule' => $request->schedule_id])
-            ->with('success', 'Advertiser created successfully.');
-    }
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(int $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(int $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, int $id)
-    {
-        //
     }
 
     /**
@@ -158,6 +242,15 @@ class AdvertiserController extends Controller
      */
     public function destroy(int $id)
     {
-        //
+        $advertiser = Advertiser::find($id);
+        $advertiser->delete();
+        return redirect()->route('advertisers.index');
     }
+
+    public function select()
+    {
+        $advertisers = Advertiser::all();
+        return view('advertisers.select', compact('advertisers'));
+    }
+
 }

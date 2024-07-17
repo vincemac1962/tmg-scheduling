@@ -46,14 +46,7 @@ class SitesController extends Controller
         return view('sites.index', compact('sites', 'header' ));
     }
 
-    // ToDo: Remove this function after testing
-    /*public function index()
-    {
-        // show all sites
-        $header = 'Sites';
-        $sites = Site::orderBy('site_ref', 'asc')->paginate(10);
-        return view('sites.index', ['header' => $header])->with('sites', $sites);
-    } */
+
 
     /**
      * Show the form for creating a new resource.

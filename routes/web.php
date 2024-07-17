@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdvertiserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,7 +41,10 @@ Route::resource('sites', App\Http\Controllers\SitesController::class);
 Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
 // Schedule Items resource route
 Route::resource('schedule_items', App\Http\Controllers\ScheduleItemController::class);
+// add new/existing advertiser
+//Route::get('/advertisers/select', [AdvertiserController::class, 'select'])->name('advertisers.select');
 // Advertiser resource route
 Route::resource('advertisers', App\Http\Controllers\AdvertiserController::class);
+
 
 require __DIR__.'/auth.php';

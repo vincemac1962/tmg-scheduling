@@ -21,6 +21,9 @@ class ScheduleController extends Controller
     // index method
     public function index(Request $request)
     {
+        // unset the session variable
+        session()->forget('schedule_id');
+
         $query = Schedule::query();
 
         $schedules = $query->paginate(10);
@@ -43,6 +46,9 @@ class ScheduleController extends Controller
 
     public function show(int $id)
     {
+        // set the schedule id in the session
+        session(['schedule_id' => $id]);
+
         $schedule = Schedule::with('scheduleItems.upload')->find($id);
         $data = array(
             'header' => 'Schedule Details',
