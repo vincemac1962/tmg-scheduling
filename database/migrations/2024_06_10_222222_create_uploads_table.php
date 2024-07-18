@@ -19,11 +19,9 @@ class CreateUploadsTable extends Migration
             $table->string('resource_type');
             $table->string('resource_filename');
             $table->string('resource_path');
-            $table->string('file_path')->nullable();
             $table->boolean('is_uploaded')->default(false);
             $table->integer('uploaded_by')->nullable();
             $table->dateTime('uploaded_at')->nullable();
-            $table->mediumText('notes')->nullable();
             $table->timestamps();
         });
     }

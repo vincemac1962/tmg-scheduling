@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             SitesTableSeeder::class,
             ScheduleTableSeeder::class,
             AdvertiserSeeder::class,
-            UploadsTableSeeder::class,
+            //UploadsTableSeeder::class,
             ScheduleItemSeeder::class,
         ]);
 

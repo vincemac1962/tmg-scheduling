@@ -2,41 +2,44 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Advertiser;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+use Faker\Generator as Faker;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Advertiser>
+ * @extends Factory<Advertiser>
  */
 class AdvertiserFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array
      */
-    public function definition(): array
+    public function definition()
     {
+        $contract = $this->faker->unique()->numerify('######Y#'); // Example pattern
 
         return [
-            // 'resource_type' => $resource_type,
-            'contract' => $this->faker->unique()->numberBetween(100000, 999999) . $this->faker->randomElement(['Y1', 'Y2']),
+            'contract' => $contract,
             'business_name' => $this->faker->company,
             'address_1' => $this->faker->streetAddress,
-            'address_2' => $this->faker->streetAddress,
-            'street' => $this->faker->streetName,
             'city' => $this->faker->city,
+            'county' => $this->faker->state,
+            'postal_code' => $this->faker->postcode,
             'country' => $this->faker->country,
             'phone' => $this->faker->phoneNumber,
             'mobile' => $this->faker->phoneNumber,
-            'email' => $this->faker->unique()->safeEmail,
+            'email' => $this->faker->safeEmail,
             'url' => $this->faker->url,
             'social' => $this->faker->url,
-            'banner' => substr(Str::slug($this->faker->company), 0, 16) . '.png',
-            'button' => substr(Str::slug($this->faker->company), 0, 16) . '.png',
-            'mp4' => substr(Str::slug($this->faker->company), 0, 16) . '.mp4',
-            'created_by' => User::query()->exists() ? User::all()->random()->id : User::factory()->create()->id,
+            'banner' => 'ban-' . $contract . '.png',
+            'button' => 'btn-' . $contract . '.png',
+            'mp4' => 'mp4-' . $contract . '.mp4',
+            'sort_order' => $this->faker->numberBetween(1, 100),
+            'is_active' => $this->faker->boolean,
+            'is_deleted' => false,
+            'created_by' => $this->faker->numberBetween(1, 10), // Assuming you have these user IDs available
         ];
     }
 }

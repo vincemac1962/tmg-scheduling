@@ -73,7 +73,7 @@
                                         <button id="addNewAdvertiser" onclick="redirectToAdvertiserAction({{ $schedule->id }}, 'create')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                             Add New Advertiser
                                         </button>
-                                        <button id="selectExistingAdvertiser" onclick="redirectToAdvertiserAction({{ $schedule->id }}, 'select')" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                        <button id="selectExistingAdvertiser" onclick="window.location.href='/advertisers/select'" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                                             Select Existing Advertiser
                                         </button>
                                     </div>

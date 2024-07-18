@@ -3,6 +3,7 @@
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdvertiserController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,8 +42,9 @@ Route::resource('sites', App\Http\Controllers\SitesController::class);
 Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
 // Schedule Items resource route
 Route::resource('schedule_items', App\Http\Controllers\ScheduleItemController::class);
-// add new/existing advertiser
-//Route::get('/advertisers/select', [AdvertiserController::class, 'select'])->name('advertisers.select');
+// get list of existing advertisers
+Route::get('/advertisers/select', [AdvertiserController::class, 'selectExisting'])->name('advertisers.select');
+Route::post('/schedule/addSelectedAdvertisers', [ScheduleController::class, 'addSelectedAdvertisers']);
 // Advertiser resource route
 Route::resource('advertisers', App\Http\Controllers\AdvertiserController::class);
 

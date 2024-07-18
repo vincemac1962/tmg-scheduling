@@ -2,17 +2,47 @@
 
 namespace Database\Seeders;
 
-use App\Models\Advertiser;
+use App\Models\Upload;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Advertiser;
+use Faker\Factory as Faker;
+
 
 class AdvertiserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * @param $faker
+     * @return void
      */
-    public function run(): void
+    public function run()
     {
-        Advertiser::factory()->count(25)->create();
+            // Retrieve all User IDs from the database
+            $userIds = User::all()->pluck('id')->toArray();
+
+            $faker = Faker::create();
+
+            Advertiser::factory()->count(25)->create()->each(function ($advertiser) use ($faker, $userIds) {
+            $uploads = [
+                ['ban', $advertiser->banner, 'public/banner/'],
+                ['btn', $advertiser->button, 'public/button/'],
+                ['mp4', $advertiser->mp4, 'public/mp4/']
+            ];
+
+            foreach ($uploads as $upload) {
+                Upload::create([
+                    'advertiser_id' => $advertiser->id,
+                    'resource_type' => $upload[0],
+                    'resource_filename' => $upload[1],
+                    'resource_path' => $upload[2],
+                    'uploaded_by' => $faker->randomElement($userIds),
+                    'is_uploaded' => true,
+                    'uploaded_at' => $faker->dateTimeThisYear,
+                ]);
+            }
+        });
     }
 }

@@ -11,6 +11,7 @@ class Upload extends Model
     use HasFactory;
 
     protected $fillable = [
+        'advertiser_id',
         'resource_type',
         'resource_filename',
         'resource_path',

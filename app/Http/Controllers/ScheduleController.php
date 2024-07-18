@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advertiser;
 use App\Models\Schedule;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -100,6 +101,32 @@ class ScheduleController extends Controller
         $schedule = Schedule::find($id);
         $schedule->delete();
         return redirect()->route('schedules.index');
+    }
+
+    public function addSelectedAdvertisers(Request $request)
+    {
+        $advertiserIds = $request->input('advertiser_ids', []);
+        $scheduleId = session('schedule_id');
+
+        foreach ($advertiserIds as $advertiserId) {
+            $advertiser = Advertiser::find($advertiserId);
+            $fields = ['banner', 'button', 'mp4'];
+
+            foreach ($fields as $field) {
+                if (!is_null($advertiser->$field)) {
+                    $scheduleItem = new \App\Models\ScheduleItem();
+                    $scheduleItem->schedule_id = $scheduleId;
+                    // upload id set to zero as it's an existing file
+                    $scheduleItem->upload_id = 0;
+                    $scheduleItem->advertiser_id = $advertiser->id;
+                    $scheduleItem->file = $advertiser->$field;
+                    $scheduleItem->created_by = auth()->id();
+                    $scheduleItem->save();
+                }
+            }
+        }
+
+        return redirect()->route('schedules.show', ['schedule' => $scheduleId]);
     }
 
 

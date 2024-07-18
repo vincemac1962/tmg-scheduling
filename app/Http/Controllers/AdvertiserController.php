@@ -247,9 +247,9 @@ class AdvertiserController extends Controller
         return redirect()->route('advertisers.index');
     }
 
-    public function select()
+    public function selectExisting(Request $request)
     {
-        $advertisers = Advertiser::all();
+        $advertisers = Advertiser::orderBy('updated_at', 'desc')->paginate(20);
         return view('advertisers.select', compact('advertisers'));
     }
 
