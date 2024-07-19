@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Advertiser;
 use App\Models\Schedule;
+use App\Models\Upload;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -45,17 +46,13 @@ class ScheduleController extends Controller
         return view('schedules.show')->with($data);
     } */
 
-    public function show(int $id)
+    public function show($id)
     {
-        // set the schedule id in the session
+        $schedule = Schedule::findOrFail($id);
         session(['schedule_id' => $id]);
+        $scheduleItems = $schedule->scheduleItems()->paginate(10);
 
-        $schedule = Schedule::with('scheduleItems.upload')->find($id);
-        $data = array(
-            'header' => 'Schedule Details',
-            'schedule' => $schedule
-        );
-        return view('schedules.show')->with($data);
+        return view('schedules.show', compact('schedule', 'scheduleItems'));
     }
 
 
@@ -109,20 +106,16 @@ class ScheduleController extends Controller
         $scheduleId = session('schedule_id');
 
         foreach ($advertiserIds as $advertiserId) {
-            $advertiser = Advertiser::find($advertiserId);
-            $fields = ['banner', 'button', 'mp4'];
+            $uploads = Upload::where('advertiser_id', $advertiserId)->get();
 
-            foreach ($fields as $field) {
-                if (!is_null($advertiser->$field)) {
-                    $scheduleItem = new \App\Models\ScheduleItem();
-                    $scheduleItem->schedule_id = $scheduleId;
-                    // upload id set to zero as it's an existing file
-                    $scheduleItem->upload_id = 0;
-                    $scheduleItem->advertiser_id = $advertiser->id;
-                    $scheduleItem->file = $advertiser->$field;
-                    $scheduleItem->created_by = auth()->id();
-                    $scheduleItem->save();
-                }
+            foreach ($uploads as $upload) {
+                $scheduleItem = new \App\Models\ScheduleItem();
+                $scheduleItem->schedule_id = session('schedule_id');
+                $scheduleItem->upload_id = $upload->id;
+                $scheduleItem->advertiser_id = $advertiserId;
+                $scheduleItem->file = $upload->resource_path . $upload->resource_filename;
+                $scheduleItem->created_by = auth()->id();
+                $scheduleItem->save();
             }
         }
 

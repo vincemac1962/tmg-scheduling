@@ -41,7 +41,6 @@ class UploadTest extends TestCase
             'is_uploaded' => $faker->boolean,
             'uploaded_by' => $faker->randomElement([1, 2, 3]),
             'uploaded_at' => $faker->dateTimeThisYear,
-            'notes' => $faker->paragraph,
         ]);
 
         $this->assertDatabaseHas('uploads', ['id' => $upload->id]);

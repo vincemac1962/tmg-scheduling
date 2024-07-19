@@ -26,8 +26,9 @@ class ScheduleItemTest extends TestCase
         // Arrange
         $this->withoutExceptionHandling(); // Temporarily added to get more detailed error messages
         $user = User::factory()->create();
+        $upload = null;
         try {
-            $upload = Upload::factory()->create();
+            $upload = Upload::factory()->create(['uploaded_by' => $user->id]);
         } catch (\Exception $e) {
             Log::error("Failed to create upload: " . $e->getMessage());
             // Optionally, rethrow the exception or handle it as needed
@@ -36,6 +37,8 @@ class ScheduleItemTest extends TestCase
         $scheduleItems = ScheduleItem::factory()->count(3)->create([
             'file' => $upload->resource_path . $upload->resource_filename,
             'schedule_id' => $schedule->id,
+            'upload_id' => $upload->id,
+            'created_by' => $user->id
         ]);
 
         // Act
@@ -66,6 +69,8 @@ class ScheduleItemTest extends TestCase
 
         $advertiser = Advertiser::factory()->create();
 
+        $upload = null;
+
         try {
             $upload = Upload::factory()->create();
         } catch (\Exception $e) {
@@ -85,6 +90,8 @@ class ScheduleItemTest extends TestCase
         $scheduleItem = ScheduleItem::factory()->create([
             'file' => $filePath,
             'schedule_id' => $schedule->id, // Use the id of the Schedule instance
+            'upload_id' => $upload->id,
+            'created_by' => $user->id
         ]);
 
         // Act

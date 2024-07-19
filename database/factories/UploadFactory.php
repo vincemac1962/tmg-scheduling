@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Advertiser;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UploadFactory extends Factory
@@ -28,9 +29,8 @@ class UploadFactory extends Factory
             'resource_filename' => $resource_filename,
             'resource_path' => $file_path,
             'is_uploaded' => $is_uploaded,
-            'uploaded_by' => $this->faker->numberBetween(1,5),
+            'uploaded_by' => User::inRandomOrder()->first()->id,
             'uploaded_at' => $uploaded_at,
-            'notes' => $this->faker->sentence,
         ];
     }
 }

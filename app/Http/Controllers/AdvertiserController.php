@@ -83,6 +83,7 @@ class AdvertiserController extends Controller
     public function store(Request $request)
     {
         $advertiser = $this->saveAdvertiser($request);
+        $scheduleId = session('schedule_id');
         $this->handleFileUploads($request, $advertiser);
         if (session()->has('schedule_id')) {
             return redirect()->route('schedules.show', ['schedule' => session('schedule_id')])
@@ -224,6 +225,8 @@ class AdvertiserController extends Controller
                 $upload->uploaded_by = auth()->id();
                 $upload->uploaded_at = now();
                 $upload->save();
+                $specificVariable = session('schedule_id', 'Schedule ID not found');
+                \Log::info('Specific session variable:', ['schedule_id' => $specificVariable]);
                 if (session()->has('schedule_id')) {
                     $scheduleItem = new \App\Models\ScheduleItem();
                     $scheduleItem->schedule_id = $request->schedule_id;

@@ -3,7 +3,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container max-w-max mx-auto px-4">
+    <div class="container max-w-max mx-auto mb-16 px-4">
         <h1 class="mt-5 text-2xl">Schedule</h1>
         <p><strong>ID: </strong>{{$schedule->id}}</p>
         <p><strong>Title: </strong>{{$schedule->title}}</p>
@@ -22,7 +22,7 @@
                 <div class="text-white text-md col-span-1"></div>
             </div>
             <div class="container grid grid-cols-12 gap-4 p-4">
-            @foreach($schedule->scheduleItems as $item)
+            @foreach($scheduleItems as $item)
                 <div class="col-span-2">
                     {{  $item->upload->resource_type  }}
                 </div>
@@ -44,6 +44,9 @@
                 <p class="text-center text-xl text-gray-500">No schedule items found</p>
         @endif
         <hr>
+        </div>
+        <div class="flex justify-center">
+                {{ $scheduleItems->links() }}
         </div>
             <div class="flex justify-center mt-4">
                 <a href="/schedules" class="w-40 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2 text-center text-xs">Back</a>
