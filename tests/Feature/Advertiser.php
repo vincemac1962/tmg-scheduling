@@ -69,6 +69,54 @@ class Advertiser extends TestCase
         ]);
     }
 
+    public function an_advertiser_can_be_created_without_a_schedule()
+    {
+        $this->withoutExceptionHandling();
+
+        // Assuming you have a user who can create an advertiser
+        $user = User::factory()->create();
+
+        // Simulate being logged in as that user
+        $this->actingAs($user);
+
+        // Create a Schedule instance
+        //$schedule = Schedule::factory()->create();
+
+        // Simulate file uploads
+        $bannerFile = UploadedFile::fake()->image('banner.png');
+        $buttonFile = UploadedFile::fake()->image('button.png');
+        $mp4File = UploadedFile::fake()->create('video.mp4', 1000); // Size in kilobytes
+
+        // Prepare the data for the new advertiser with the simulated file uploads
+        $advertiserData = [
+            'business_name' => 'Test Business',
+            'contract' => '12345',
+            'banner' => $bannerFile,
+            'button' => $buttonFile,
+            'mp4' => $mp4File,
+            //'schedule_id' => $schedule->id,
+        ];
+
+        // Make a POST request to the route handling the store() method and pass the data
+        $response = $this->post(route('advertisers.store'), $advertiserData);
+
+        // Retrieve the created advertiser from the database
+        $createdAdvertiser = \App\Models\Advertiser::where('contract', '12345')->first();
+
+        // Assert the response is a redirect to the expected route (adjust as necessary)
+        //$response->assertRedirect(route('schedules.show', ['schedule' => $schedule->id]));
+        $response->assertRedirect(route('advertisers.index'));
+
+        // Optionally, assert a session flash message exists
+        $response->assertSessionHas('success', 'Advertiser created successfully.');
+
+        // Assert the advertiser was created in the database
+        $this->assertDatabaseHas('advertisers', [
+            'business_name' => 'Test Business',
+            'contract' => '12345',
+        ]);
+    }
+
     /** @test */
     public function an_advertiser_can_be_updated()
     {

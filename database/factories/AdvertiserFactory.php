@@ -40,12 +40,11 @@ class AdvertiserFactory extends Factory
             'sort_order' => $this->faker->numberBetween(1, 100),
             'is_active' => $this->faker->boolean,
             'is_deleted' => false,
-            'created_by' => User::inRandomOrder()->firstOrCreate([
-                // Define default attributes for the User if none exists
-                'name' => 'Default User',
-                'email' => 'defaultuser' . rand(1, 10000) . '@example.com', // Generate a unique email
-                'password' => bcrypt('password'),
-            ])->id,
+            'created_by' => User::first()->id ?? User::create([
+                    'name' => 'Fallback User',
+                    'email' => 'fallback@example.com',
+                    'password' => bcrypt('password'),
+                ])->id,
         ];
     }
 }

@@ -14,7 +14,7 @@
         <p><strong>Last Edited By: </strong>{{$advertiser->creator->name}}</p>
         <hr>
         <div class="flex justify-center mt-4">
-            <a href="/advertisers" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Back</a>
+            <a href="javascript:void(0)" onclick="history.back()" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Back</a>
             <a href="/advertisers/{{$advertiser->id}}/edit" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Edit</a>
             <form action="{{ route('advertisers.destroy', $advertiser->id) }}" method="POST" class="mr-2">
                 @csrf

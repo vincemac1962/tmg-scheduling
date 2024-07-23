@@ -20,8 +20,8 @@ class UsersTableSeeder extends Seeder
         User::firstOrCreate([
             'email' => 'vince.macrae@gmail.com', // Check if this email exists
         ], [
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
+            'name' => 'Vincent MacRae',
+            'email' => 'vince.macrae@gmail.com',
             'password' => Hash::make('T1m3M3d1a'), // Hash the password
         ]);
 

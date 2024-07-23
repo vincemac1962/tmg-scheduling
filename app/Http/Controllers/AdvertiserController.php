@@ -53,6 +53,17 @@ class AdvertiserController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource without a schedule id.
+     */
+    public function createNoScheduleId()
+    {
+        // unset the schedule_id session variable
+        session()->forget('schedule_id');
+        // return the create view
+        return view('advertisers.create');
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(int $id)

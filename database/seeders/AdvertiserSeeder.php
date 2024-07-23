@@ -27,9 +27,9 @@ class AdvertiserSeeder extends Seeder
 
             Advertiser::factory()->count(25)->create()->each(function ($advertiser) use ($faker, $userIds) {
             $uploads = [
-                ['ban', $advertiser->banner, 'public/banner/'],
-                ['btn', $advertiser->button, 'public/button/'],
-                ['mp4', $advertiser->mp4, 'public/mp4/']
+                ['ban', $advertiser->banner, 'banner/'],
+                ['btn', $advertiser->button, 'button/'],
+                ['mp4', $advertiser->mp4, 'mp4/']
             ];
 
             foreach ($uploads as $upload) {
@@ -38,7 +38,7 @@ class AdvertiserSeeder extends Seeder
                     'resource_type' => $upload[0],
                     'resource_filename' => $upload[1],
                     'resource_path' => $upload[2],
-                    'uploaded_by' => $faker->randomElement($userIds),
+                    'uploaded_by' => $userIds[0],
                     'is_uploaded' => true,
                     'uploaded_at' => $faker->dateTimeThisYear,
                 ]);

@@ -14,11 +14,6 @@
         <div class="flex justify-center mt-4">
             <button onclick="history.back()" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Back</button>
             <a href="/items/{{$scheduleItem->id}}/edit" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Edit</a>
-            <form action="{{ route('schedule_items.destroy', $scheduleItem->id) }}" method="POST" class="mr-2">
-                @csrf
-                <input type="hidden" name="_method" value="DELETE">
-                <input type="submit" value="Delete" class="bg-red-500 text-white px-4 py-2 rounded cursor-pointer">
-            </form>
         </div>
     </div>
 @endsection

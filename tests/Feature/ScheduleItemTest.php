@@ -149,6 +149,35 @@ class ScheduleItemTest extends TestCase
         ]);
     }
 
+    // test the destroy method
+    public function testDestroyMethod()
+    {
+        // Arrange
+        $this->withoutExceptionHandling(); // Temporarily added to get more detailed error messages
+        $user = User::factory()->create();
+        $upload = null;
+        try {
+            $upload = Upload::factory()->create(['uploaded_by' => $user->id]);
+        } catch (\Exception $e) {
+            Log::error("Failed to create upload: " . $e->getMessage());
+            // Optionally, rethrow the exception or handle it as needed
+        }
+        $schedule = Schedule::factory()->create(['created_by' => $user->id]);
+        $scheduleItem = ScheduleItem::factory()->create([
+            'file' => $upload->resource_path . $upload->resource_filename,
+            'schedule_id' => $schedule->id,
+            'upload_id' => $upload->id,
+            'created_by' => $user->id
+        ]);
+
+        // Act
+        $response = $this->delete('/schedule_items/' . $scheduleItem->id);
+        // Assert
+        $response->assertStatus(302);
+        // Ensure you're passing the required `schedule` parameter to the route
+        $response->assertRedirect('/schedules/' . $schedule->id);
+    }
+
 
 
 }

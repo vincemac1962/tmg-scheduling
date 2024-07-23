@@ -67,7 +67,7 @@
                             <x-dropdown-link :href="route('advertisers.index')">
                                 {{ __('View All Advertisers') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('advertisers.create')">
+                            <x-dropdown-link :href="route('advertisers.createNoScheduleId')">
                                 {{ __('Create Advertiser') }}
                             </x-dropdown-link>
                             <!-- Add more links for other routes here -->

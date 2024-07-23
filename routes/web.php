@@ -44,7 +44,10 @@ Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
 Route::resource('schedule_items', App\Http\Controllers\ScheduleItemController::class);
 // get list of existing advertisers
 Route::get('/advertisers/select', [AdvertiserController::class, 'selectExisting'])->name('advertisers.select');
+// add selected advertisers to the schedule
 Route::post('/schedule/addSelectedAdvertisers', [ScheduleController::class, 'addSelectedAdvertisers']);
+// create and advertiser without a schedule id
+Route::get('/advertisers/create-no-schedule', [AdvertiserController::class, 'createNoScheduleId'])->name('advertisers.createNoScheduleId');
 // Advertiser resource route
 Route::resource('advertisers', App\Http\Controllers\AdvertiserController::class);
 

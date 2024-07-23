@@ -125,15 +125,7 @@ class ScheduleItemController extends Controller
         }
     }
 
-    // show method
-    /* public function show($id)
-    {
-        $scheduleItem = ScheduleItem::find($id);
-        $data = array(
-            'header' => 'Schedule Item Details',
-            'item' => $scheduleItem);
-        return view('schedule_items.show')->with($data);
-    } */
+
 
     public function show(int $id)
     {
@@ -150,6 +142,17 @@ class ScheduleItemController extends Controller
         );
         //dd($data);
         return view('schedule_items.show')->with($data);
+    }
+    // destroy method
+    public function destroy($id)
+    {
+        $scheduleItem = ScheduleItem::findOrFail($id);
+        $scheduleId = $scheduleItem->schedule_id;
+        $scheduleItem->delete();
+
+        // Redirect with the required `schedule` parameter
+        return redirect()->route('schedules.show', ['schedule' => $scheduleId])
+            ->with('success', 'Schedule item deleted successfully.');
     }
 
 }

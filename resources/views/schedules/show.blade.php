@@ -12,33 +12,43 @@
         <p><strong>Last Modified: </strong>{{$schedule->updated_at->format('d/m/Y H:i') }}</p>
         <p><strong>Created: </strong>{{$schedule->created_at->format('d/m/Y H:i') }}</p>
         @if(count($schedule->scheduleItems) > 0)
-            <div class="container grid grid-cols-12 gap-4 bg-gray-500 p-2 mt-5">
-                <div class="text-white text-md col-span-2">Type</div>
-                <div class="text-white text-md col-span-5">
+            <div class="container grid grid-cols-8 gap-4 bg-gray-500 p-2 mt-5">
+                <div class="text-white text-md col-span-1">Type</div>
+                <div class="text-white text-md col-span-3">
                     File
                 </div>
-                <div class="text-white text-md col-span-2">Last Modified</div>
-                <div class="text-white text-md col-span-2">Created On</div>
+                <div class="text-white text-md col-span-1">Last Modified</div>
+                <div class="text-white text-md col-span-1">Created On</div>
+                <div class="text-white text-md col-span-1"></div>
                 <div class="text-white text-md col-span-1"></div>
             </div>
-            <div class="container grid grid-cols-12 gap-4 p-4">
+            <div class="container grid grid-cols-8 gap-4 p-4">
             @foreach($scheduleItems as $item)
-                <div class="col-span-2">
+                <div class="col-span-1">
                     {{  $item->upload->resource_type  }}
                 </div>
-                <div class="col-span-5">
-                    {{ Str::limit($item->file, 50) }}
+                <div class="col-span-3">
+                    <a href="{{ Storage::url($item->file) }}">
+                        {{ Str::limit($item->file, 50) }}
+                    </a>
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-1">
                     {{ Carbon\Carbon::parse($item->start_date)->format('d-m-Y') }}
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-1">
                     {{ Carbon\Carbon::parse($item->end_date)->format('d-m-Y') }}
                 </div>
                 <div class="col-span-1">
                     <a href="/schedule_items/{{$item->id}}"
-                       class="text-blue-500 hover:text-blue-700">View</a>
+                       class="text-blue-500 hover:text-blue-700">View Item</a>
                 </div>
+                    <div class="col-span-1">
+                        <form action="/schedule_items/{{ $item->id }}" method="POST" id="delete-form-{{ $item->id }}" style="display: none;">
+                            @csrf
+                            <input type="hidden" name="_method" value="DELETE">
+                        </form>
+                        <a href="javascript:void(0);" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{ $item->id }}').submit(); }" class="text-blue-500 hover:text-blue-700">Delete Item</a>
+                    </div>
             @endforeach
         @else
                 <p class="text-center text-xl text-gray-500">No schedule items found</p>
