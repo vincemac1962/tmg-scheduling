@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Site;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -91,5 +93,118 @@ class SchedulesTest extends TestCase
         $response->assertStatus(302);
         $this->assertDatabaseMissing('schedules', ['id' => $schedule->id]);
     }
+
+    // test addSelectedAdvertisers method
+    public function testAddSelectedAdvertisers(): void
+    {
+        // Create a user and authenticate
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $schedule = Schedule::factory()->create();
+        // creates session id variable
+        session(['schedule_id' => $schedule->id]);
+
+        $response = $this->post('/schedule/addSelectedAdvertisers', [
+            'advertiser_ids' => [1, 2, 3]
+        ]);
+
+        $response->assertStatus(302);
+    }
+
+    public function testAssociateSites(): void
+    {
+        // Create a user and authenticate
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Create a schedule
+        $schedule = Schedule::factory()->create();
+
+        // Create some sites
+        $sites = Site::factory()->count(3)->create();
+
+        // Call the associateSites method
+        $response = $this->post('/schedules/' . $schedule->id . '/associate-sites', [
+            'sites' => $sites->pluck('id')->toArray()
+        ]);
+
+        // Assert the response status
+        $response->assertStatus(302);
+
+        // Assert the sites are associated with the schedule
+        $this->assertEquals($sites->pluck('id')->toArray(), $schedule->sites->pluck('id')->toArray());
+    }
+
+    // show associated sites
+    public function testShowAssociatedSites(): void
+    {
+        // Create a user and authenticate
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Create a schedule
+        $schedule = Schedule::factory()->create();
+
+        // Set the session variable for schedule_id
+        session(['schedule_id' => $schedule->id]);
+
+        // Create some sites
+        $sites = Site::factory()->count(3)->create();
+
+        // Associate the sites with the schedule
+        $schedule->sites()->sync($sites->pluck('id')->toArray());
+
+        // Call the showAssociatedSites method
+        $response = $this->get('/schedules/' . $schedule->id . '/associated-sites');
+
+        // Assert the response status
+        $response->assertStatus(200);
+
+        // Assert the sites are displayed
+        $response->assertSee($sites->first()->site_name);
+        $response->assertSee($sites->last()->site_name);
+
+        // Ensure the route call includes the schedule parameter
+        $response = $this->delete(route('schedules.removeSite', ['schedule' => $schedule->id, 'site' => $sites->first()->id]));
+
+        // Assert the response status
+        $response->assertStatus(302);
+
+        // Assert the site is removed from the schedule
+        $this->assertDatabaseMissing('schedule_site', [
+            'schedule_id' => $schedule->id,
+            'site_id' => $sites->first()->id
+        ]);
+    }
+
+    // test delete associated site
+    /*public function testRemoveAssociatedSite(): void
+    {
+        // Create a user and authenticate
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Create a schedule
+        $schedule = Schedule::factory()->create();
+
+        // Create some sites
+        $sites = Site::factory()->count(3)->create();
+
+        // Associate the sites with the schedule
+        $schedule->sites()->sync($sites->pluck('id')->toArray());
+
+        // Ensure the route call includes the schedule parameter
+        $response = $this->delete(route('schedules.removeSite', ['schedule' => $schedule->id, 'site' => $sites->first()->id]));
+
+        // Assert the response status
+        $response->assertStatus(302);
+
+        // Assert the site is removed from the schedule
+        $this->assertDatabaseMissing('schedule_site', [
+            'schedule_id' => $schedule->id,
+            'site_id' => $sites->first()->id
+        ]);
+    } */
 
 }

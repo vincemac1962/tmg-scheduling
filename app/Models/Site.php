@@ -20,4 +20,8 @@ class Site extends Model
         'site_contact',
         'site_notes'
     ];
+
+    public function schedules() {
+        return $this->belongsToMany(Schedule::class, 'schedule_site');
+    }
 }

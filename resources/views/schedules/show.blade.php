@@ -1,9 +1,7 @@
-@php use Illuminate\Support\Str; @endphp
-        <!-- This is the view for the show schedule. It will display a schedule chosen from the schedule index -->
 @extends('layouts.app')
 
 @section('content')
-    <div class="container max-w-max mx-auto mb-16 px-4">
+    <div class="mx-auto mb-16 px-4 max-w-screen-lg">
         <h1 class="mt-5 text-2xl">Schedule</h1>
         <p><strong>ID: </strong>{{$schedule->id}}</p>
         <p><strong>Title: </strong>{{$schedule->title}}</p>
@@ -11,37 +9,43 @@
         <p><strong>Created By: </strong>{{$schedule->site_id}}</p>
         <p><strong>Last Modified: </strong>{{$schedule->updated_at->format('d/m/Y H:i') }}</p>
         <p><strong>Created: </strong>{{$schedule->created_at->format('d/m/Y H:i') }}</p>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+            <a href="{{ route('sites.selection', ['schedule_id'=> $schedule->id]) }}">Select Sites</a>
+        </button>
+        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">
+            <a href="{{ route('schedules.associatedSites', ['schedule'=> $schedule->id]) }}">View Sites</a>
+        </button>
+    </div>
         @if(count($schedule->scheduleItems) > 0)
-            <div class="container grid grid-cols-8 gap-4 bg-gray-500 p-2 mt-5">
-                <div class="text-white text-md col-span-1">Type</div>
-                <div class="text-white text-md col-span-3">
-                    File
-                </div>
-                <div class="text-white text-md col-span-1">Last Modified</div>
-                <div class="text-white text-md col-span-1">Created On</div>
-                <div class="text-white text-md col-span-1"></div>
-                <div class="text-white text-md col-span-1"></div>
+            <div class="container text-gray-800 grid grid-cols-8 gap-4 p-4 mx-auto border-b">
+                <div class="text-md col-span-1">Type</div>
+                <div class="text-md col-span-3">File</div>
+                <div class="text-md col-span-1">Last Modified</div>
+                <div class="text-md col-span-1">Created On</div>
+                <div class="text-md col-span-1"></div>
+                <div class="text-md col-span-1"></div>
             </div>
-            <div class="container grid grid-cols-8 gap-4 p-4">
-            @foreach($scheduleItems as $item)
-                <div class="col-span-1">
-                    {{  $item->upload->resource_type  }}
-                </div>
-                <div class="col-span-3">
-                    <a href="{{ Storage::url($item->file) }}">
-                        {{ Str::limit($item->file, 50) }}
-                    </a>
-                </div>
-                <div class="col-span-1">
-                    {{ Carbon\Carbon::parse($item->start_date)->format('d-m-Y') }}
-                </div>
-                <div class="col-span-1">
-                    {{ Carbon\Carbon::parse($item->end_date)->format('d-m-Y') }}
-                </div>
-                <div class="col-span-1">
-                    <a href="/schedule_items/{{$item->id}}"
-                       class="text-blue-500 hover:text-blue-700">View Item</a>
-                </div>
+
+            <div class="container grid grid-cols-8 gap-4 p-4 mx-auto">
+                @foreach($scheduleItems as $item)
+                    <div class="col-span-1">
+                        {{  $item->upload->resource_type  }}
+                    </div>
+                    <div class="col-span-3">
+                        <a href="{{ Storage::url($item->file) }}">
+                            {{ Str::limit($item->file, 50) }}
+                        </a>
+                    </div>
+                    <div class="col-span-1">
+                        {{ Carbon\Carbon::parse($item->start_date)->format('d-m-Y') }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ Carbon\Carbon::parse($item->end_date)->format('d-m-Y') }}
+                    </div>
+                    <div class="col-span-1">
+                        <a href="/schedule_items/{{$item->id}}"
+                           class="text-blue-500 hover:text-blue-700">View Item</a>
+                    </div>
                     <div class="col-span-1">
                         <form action="/schedule_items/{{ $item->id }}" method="POST" id="delete-form-{{ $item->id }}" style="display: none;">
                             @csrf
@@ -49,15 +53,15 @@
                         </form>
                         <a href="javascript:void(0);" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{ $item->id }}').submit(); }" class="text-blue-500 hover:text-blue-700">Delete Item</a>
                     </div>
-            @endforeach
-        @else
-                <p class="text-center text-xl text-gray-500">No schedule items found</p>
-        @endif
-        <hr>
-        </div>
-        <div class="flex justify-center">
+                @endforeach
+                @else
+                    <p class="text-center text-xl text-gray-500">No schedule items found</p>
+                @endif
+                <hr>
+            </div>
+            <div class="flex justify-center">
                 {{ $scheduleItems->links() }}
-        </div>
+            </div>
             <div class="flex justify-center mt-4">
                 <a href="/schedules" class="w-40 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2 text-center text-xs">Back</a>
                 <a href="/schedules/{{$schedule->id}}/edit" class="w-40 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 text-center text-xs">Edit Schedule</a>
@@ -124,7 +128,4 @@
                     window.location.href = `${baseUrl}?schedule_id=${scheduleId}`;
                 }
             </script>
-
-
-
 @endsection

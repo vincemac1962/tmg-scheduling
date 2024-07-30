@@ -122,5 +122,39 @@ class ScheduleController extends Controller
         return redirect()->route('schedules.show', ['schedule' => $scheduleId]);
     }
 
+    public function associateSites(Request $request, $scheduleId) {
+        $schedule = Schedule::findOrFail($scheduleId);
+
+        // Retrieve the existing associated site IDs
+        $existingSiteIds = $schedule->sites()->pluck('site_id')->toArray();
+
+        // Merge existing site IDs with new site IDs from the request
+        $newSiteIds = array_merge($existingSiteIds, $request->input('sites', []));
+
+        // Use syncWithoutDetaching to associate sites without removing existing ones
+        $schedule->sites()->syncWithoutDetaching($newSiteIds);
+
+        return redirect()->route('schedules.show', $scheduleId);
+    }
+
+    // show associated sites
+    public function showAssociatedSites($scheduleId) {
+        $schedule = Schedule::findOrFail($scheduleId);
+        $sites = $schedule->sites()->select('sites.id', 'site_ref', 'site_name', 'site_address')->get();
+        $header = 'Associated Sites for Schedule ' . $scheduleId;
+        return view('schedules.associated_sites', compact('sites', 'header', 'scheduleId'));
+    }
+
+    // remove associated site
+    public function removeAssociatedSite($scheduleId, $siteId) {
+        $schedule = Schedule::findOrFail($scheduleId);
+        $schedule->sites()->detach($siteId);
+        return redirect()->route('schedules.associatedSites', $scheduleId);
+    }
+
+
+
+
+
 
 }

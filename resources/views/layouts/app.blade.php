@@ -44,7 +44,9 @@
 
                         <!-- Page Content -->
             <main>
-                @yield('content')
+                <div class="bg-white rounded-lg m-8 p-4">
+                    @yield('content')
+                </div>
             </main>
         </div>
 

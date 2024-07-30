@@ -20,4 +20,8 @@ class Schedule extends Model
     {
         return $this->hasMany(ScheduleItem::class);
     }
+
+    public function sites() {
+        return $this->belongsToMany(Site::class, 'schedule_site');
+    }
 }

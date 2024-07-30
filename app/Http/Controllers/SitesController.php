@@ -46,6 +46,40 @@ class SitesController extends Controller
         return view('sites.index', compact('sites', 'header' ));
     }
 
+    public function indexForSelection(Request $request, $schedule_id)
+    {
+        // Retrieve the IDs of the sites already associated with the schedule
+        $associatedSiteIds = \DB::table('schedule_site')
+            ->where('schedule_id', $schedule_id)
+            ->pluck('site_id')
+            ->toArray();
+
+        $query = Site::query();
+
+        // Exclude the associated sites
+        $query->whereNotIn('id', $associatedSiteIds);
+
+        // Filtering
+        if ($request->has('filter')) {
+            $query->where(function($q) use ($request) {
+                $q->where('site_name', 'like', '%' . $request->filter . '%')
+                    ->orWhere('site_ref', 'like', '%' . $request->filter . '%');
+            });
+        }
+
+        // Sorting
+        if ($request->has('sort_by')) {
+            $direction = $request->direction ?? 'asc';
+            $query->orderBy($request->sort_by, $direction);
+        }
+
+        $sites = $query->paginate(10);
+
+        $header = 'Sites Index';
+
+        return view('schedules.associate_sites', compact('sites', 'header', 'schedule_id'));
+    }
+
 
 
     /**
