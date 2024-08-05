@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\ScheduleItem;
 use App\Models\Site;
+use App\Models\Upload;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -178,33 +180,5 @@ class SchedulesTest extends TestCase
         ]);
     }
 
-    // test delete associated site
-    /*public function testRemoveAssociatedSite(): void
-    {
-        // Create a user and authenticate
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        // Create a schedule
-        $schedule = Schedule::factory()->create();
-
-        // Create some sites
-        $sites = Site::factory()->count(3)->create();
-
-        // Associate the sites with the schedule
-        $schedule->sites()->sync($sites->pluck('id')->toArray());
-
-        // Ensure the route call includes the schedule parameter
-        $response = $this->delete(route('schedules.removeSite', ['schedule' => $schedule->id, 'site' => $sites->first()->id]));
-
-        // Assert the response status
-        $response->assertStatus(302);
-
-        // Assert the site is removed from the schedule
-        $this->assertDatabaseMissing('schedule_site', [
-            'schedule_id' => $schedule->id,
-            'site_id' => $sites->first()->id
-        ]);
-    } */
 
 }

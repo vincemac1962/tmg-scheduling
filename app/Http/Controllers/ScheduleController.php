@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Advertiser;
 use App\Models\Schedule;
+use App\Models\ScheduleItem;
 use App\Models\Upload;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ScheduleController extends Controller
 {
@@ -150,6 +153,51 @@ class ScheduleController extends Controller
         $schedule = Schedule::findOrFail($scheduleId);
         $schedule->sites()->detach($siteId);
         return redirect()->route('schedules.associatedSites', $scheduleId);
+    }
+
+    // API method returns schedules for a given site
+    public function getSchedules($siteId)
+    {
+        $schedules = DB::table('schedules')
+            ->join('schedule_site', 'schedules.id', '=', 'schedule_site.schedule_id')
+            ->where('schedule_site.site_id', $siteId)
+            ->where('schedule_site.downloaded', false)
+            ->select('schedules.id', 'schedules.title', 'schedules.created_at', 'schedules.updated_at')
+            ->get();
+
+        $result = [];
+
+        foreach ($schedules as $schedule) {
+            $scheduleItems = DB::table('schedule_items')
+                ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
+                ->where('schedule_items.schedule_id', $schedule->id)
+                ->select(
+                    'schedule_items.id',
+                    'schedule_items.schedule_id',
+                    'schedule_items.advertiser_id',
+                    'schedule_items.title',
+                    'schedule_items.start_date',
+                    'schedule_items.end_date',
+                    'schedule_items.file',
+                    'uploads.resource_type'
+                )
+                ->get();
+
+            $filteredItems = $scheduleItems->filter(function ($item) {
+                if (is_null($item->file)) {
+                    Log::warning('Schedule item skipped due to null file', ['item_id' => $item->id]);
+                    return false;
+                }
+                return true;
+            });
+
+            $result[] = [
+                'schedule' => $schedule,
+                'items' => $filteredItems
+            ];
+        }
+
+        return response()->json($result);
     }
 
 
