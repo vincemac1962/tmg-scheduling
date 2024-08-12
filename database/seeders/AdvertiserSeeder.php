@@ -27,9 +27,9 @@ class AdvertiserSeeder extends Seeder
 
             Advertiser::factory()->count(25)->create()->each(function ($advertiser) use ($faker, $userIds) {
             $uploads = [
-                ['ban', $advertiser->banner, 'banner/'],
-                ['btn', $advertiser->button, 'button/'],
-                ['mp4', $advertiser->mp4, 'mp4/']
+                ['ban', $advertiser->banner, 'banners/'],
+                ['btn', $advertiser->button, 'buttons/'],
+                ['mp4', $advertiser->mp4, 'mp4s/']
             ];
 
             foreach ($uploads as $upload) {

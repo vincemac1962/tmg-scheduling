@@ -158,6 +158,11 @@ class ScheduleController extends Controller
     // API method returns schedules for a given site
     public function getSchedules($siteId)
     {
+        // get the record id from the site id
+        $site = DB::table('sites')->where('site_ref', $siteId)->first();
+        // store the site id as a variable
+        $siteId = $site->id;
+        // Retrieve schedules associated with the given site ID
         $schedules = DB::table('schedules')
             ->join('schedule_site', 'schedules.id', '=', 'schedule_site.schedule_id')
             ->where('schedule_site.site_id', $siteId)
@@ -165,9 +170,12 @@ class ScheduleController extends Controller
             ->select('schedules.id', 'schedules.title', 'schedules.created_at', 'schedules.updated_at')
             ->get();
 
+        // Initialize result array
         $result = [];
 
+        // Loop through each schedule
         foreach ($schedules as $schedule) {
+            // Retrieve associated schedule items
             $scheduleItems = DB::table('schedule_items')
                 ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
                 ->where('schedule_items.schedule_id', $schedule->id)
@@ -183,6 +191,7 @@ class ScheduleController extends Controller
                 )
                 ->get();
 
+            // Filter out schedule items with a null file
             $filteredItems = $scheduleItems->filter(function ($item) {
                 if (is_null($item->file)) {
                     Log::warning('Schedule item skipped due to null file', ['item_id' => $item->id]);
@@ -191,13 +200,78 @@ class ScheduleController extends Controller
                 return true;
             });
 
+            // Initialize advertiser data array
+            $advertiserData = [];
+            // Get unique advertiser IDs from the filtered items
+            $uniqueAdvertiserIds = $filteredItems->pluck('advertiser_id')->unique();
+
+            // Loop through each unique advertiser ID
+            foreach ($uniqueAdvertiserIds as $advertiserId) {
+                // Retrieve advertiser data for the corresponding ID
+                $advertiser = DB::table('advertisers')
+                    ->where('id', $advertiserId)
+                    ->select(
+                        'id',
+                        'contract',
+                        'business_name',
+                        'address_1',
+                        'address_2',
+                        'street',
+                        'city',
+                        'county',
+                        'postal_code',
+                        'country',
+                        'phone',
+                        'mobile',
+                        'email',
+                        'url',
+                        'social',
+                        'banner',
+                        'button',
+                        'mp4'
+                    )
+                    ->first();
+
+                // Add advertiser data to the array if it exists
+                if ($advertiser) {
+                    $advertiserData[] = $advertiser;
+                }
+            }
+
+            // Add schedule, filtered items, and advertiser data to the result array
             $result[] = [
                 'schedule' => $schedule,
-                'items' => $filteredItems
+                'items' => $filteredItems,
+                'advertisers' => $advertiserData
             ];
         }
 
+        // Return the result array as a JSON response
         return response()->json($result);
+    }
+
+    public function getFile(Request $request)
+    {
+        // Validate the request to ensure 'file_path' is provided
+        $request->validate([
+            'file_path' => 'required|string'
+        ]);
+
+        // Retrieve the file path from the request
+        $filePath = storage_path('app/public/' . $request->input('file_path'));
+
+        // Log the file path for debugging
+        Log::info('Checking file path: ' . $filePath);
+
+        // Check if the file exists
+        if (!file_exists($filePath)) {
+            // Log the error
+            Log::error('File not found at path: ' . $filePath);
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        // Return the file as a response
+        return response()->download($filePath);
     }
 
 

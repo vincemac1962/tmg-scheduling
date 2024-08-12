@@ -19,4 +19,8 @@ use App\Http\Controllers\ScheduleController;
     return $request->user();
 }); */
 
+// Route to get schedules
 Route::get('/schedules/{siteId}', [ScheduleController::class, 'getSchedules']);
+
+// Route to get files
+Route::get('/get-file', [ScheduleController::class, 'getFile']);

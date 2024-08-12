@@ -213,9 +213,9 @@ class AdvertiserController extends Controller
     private function handleFileUploads(Request $request, Advertiser $advertiser)
     {
         $filePaths = [
-            'banner' => 'public/banner',
-            'button' => 'public/button',
-            'mp4' => 'public/mp4',
+            'banner' => 'banners',
+            'button' => 'buttons',
+            'mp4' => 'mp4s',
         ];
 
         foreach ($filePaths as $field => $path) {
