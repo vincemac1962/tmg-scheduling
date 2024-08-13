@@ -38,17 +38,6 @@ class ScheduleController extends Controller
         return view('schedules.index', compact('schedules', 'header'));
     }
 
-
-    /*
-    public function show(int $id)
-    {
-        $schedule = Schedule::with('scheduleItems')->find($id);
-        $data = array(
-            'header' => 'Schedule Details',
-            'schedule' => $schedule);
-        return view('schedules.show')->with($data);
-    } */
-
     public function show($id)
     {
         $schedule = Schedule::findOrFail($id);
@@ -158,56 +147,53 @@ class ScheduleController extends Controller
     // API method returns schedules for a given site
     public function getSchedules($siteId)
     {
-        // get the record id from the site id
+        // Step 1: Retrieve Schedule and Schedule Items
         $site = DB::table('sites')->where('site_ref', $siteId)->first();
-        // store the site id as a variable
         $siteId = $site->id;
-        // Retrieve schedules associated with the given site ID
-        $schedules = DB::table('schedules')
-            ->join('schedule_site', 'schedules.id', '=', 'schedule_site.schedule_id')
-            ->where('schedule_site.site_id', $siteId)
-            ->where('schedule_site.downloaded', false)
-            ->select('schedules.id', 'schedules.title', 'schedules.created_at', 'schedules.updated_at')
+
+        $schedule = DB::table('schedule_site')
+            ->where('site_id', $siteId)
+            ->join('schedules', 'schedule_site.schedule_id', '=', 'schedules.id')
+            ->select('schedules.*')
+            ->first();
+
+        if (!$schedule) {
+            return response()->json(['error' => 'Schedule not found.'], 404);
+        }
+
+        $scheduleItems = DB::table('schedule_items')
+            ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
+            ->where('schedule_items.schedule_id', $schedule->id)
+            ->select(
+                'schedule_items.id',
+                'schedule_items.schedule_id',
+                'schedule_items.advertiser_id',
+                'schedule_items.title',
+                'schedule_items.start_date',
+                'schedule_items.end_date',
+                'schedule_items.file',
+                'uploads.resource_type'
+            )
             ->get();
 
-        // Initialize result array
-        $result = [];
+        // Step 2: Filter Items with Null Advertiser ID
+        $nullAdvertiserItems = $scheduleItems->filter(function ($item) {
+            return is_null($item->advertiser_id);
+        });
 
-        // Loop through each schedule
-        foreach ($schedules as $schedule) {
-            // Retrieve associated schedule items
-            $scheduleItems = DB::table('schedule_items')
-                ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
-                ->where('schedule_items.schedule_id', $schedule->id)
-                ->select(
-                    'schedule_items.id',
-                    'schedule_items.schedule_id',
-                    'schedule_items.advertiser_id',
-                    'schedule_items.title',
-                    'schedule_items.start_date',
-                    'schedule_items.end_date',
-                    'schedule_items.file',
-                    'uploads.resource_type'
-                )
-                ->get();
+        // Step 3: Retrieve and Merge Items with Advertiser ID
+        $nonNullAdvertiserItems = $scheduleItems->filter(function ($item) {
+            return !is_null($item->advertiser_id);
+        });
 
-            // Filter out schedule items with a null file
-            $filteredItems = $scheduleItems->filter(function ($item) {
-                if (is_null($item->file)) {
-                    Log::warning('Schedule item skipped due to null file', ['item_id' => $item->id]);
-                    return false;
-                }
-                return true;
-            });
+        $mergedItems = $nullAdvertiserItems->merge($nonNullAdvertiserItems);
 
-            // Initialize advertiser data array
-            $advertiserData = [];
-            // Get unique advertiser IDs from the filtered items
-            $uniqueAdvertiserIds = $filteredItems->pluck('advertiser_id')->unique();
+        // Step 4: Process Advertiser Data
+        $advertiserData = [];
+        $uniqueAdvertiserIds = $mergedItems->pluck('advertiser_id')->unique();
 
-            // Loop through each unique advertiser ID
-            foreach ($uniqueAdvertiserIds as $advertiserId) {
-                // Retrieve advertiser data for the corresponding ID
+        foreach ($uniqueAdvertiserIds as $advertiserId) {
+            if ($advertiserId) {
                 $advertiser = DB::table('advertisers')
                     ->where('id', $advertiserId)
                     ->select(
@@ -232,21 +218,34 @@ class ScheduleController extends Controller
                     )
                     ->first();
 
-                // Add advertiser data to the array if it exists
+                $uploads = DB::table('uploads')
+                    ->where('advertiser_id', $advertiserId)
+                    ->select('resource_type', 'resource_filename')
+                    ->get();
+
+                foreach ($uploads as $upload) {
+                    if ($upload->resource_type === 'ban') {
+                        $advertiser->banner = $upload->resource_filename;
+                    } elseif ($upload->resource_type === 'btn') {
+                        $advertiser->button = $upload->resource_filename;
+                    } elseif ($upload->resource_type === 'mp4') {
+                        $advertiser->mp4 = $upload->resource_filename;
+                    }
+                }
+
                 if ($advertiser) {
                     $advertiserData[] = $advertiser;
                 }
             }
-
-            // Add schedule, filtered items, and advertiser data to the result array
-            $result[] = [
-                'schedule' => $schedule,
-                'items' => $filteredItems,
-                'advertisers' => $advertiserData
-            ];
         }
 
-        // Return the result array as a JSON response
+        // Step 5: Create and Return Result Array
+        $result[] = [
+            'schedule' => $schedule,
+            'items' => $mergedItems,
+            'advertisers' => $advertiserData
+        ];
+
         return response()->json($result);
     }
 

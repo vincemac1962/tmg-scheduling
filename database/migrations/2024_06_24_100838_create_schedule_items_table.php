@@ -24,6 +24,7 @@ return new class extends Migration
             $table->dateTime('end_date')->nullable();
             $table->string('file');
             $table->integer('created_by');
+            $table->dateTime('downloaded_at')->nullable();
             $table->timestamps();
         });
     }

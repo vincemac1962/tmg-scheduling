@@ -78,7 +78,7 @@ class ScheduleItemController extends Controller
             $upload = new Upload();
             $upload->resource_type = $request->input('resource_type');
             $upload->resource_filename = $filename;
-            $upload->resource_path = 'storage/uploads/mp4/' . $filename;
+            $upload->resource_path = 'mp4s/' . $filename;
             $upload->is_uploaded = false;
             $upload->uploaded_by = Auth::id();
             $upload->save();
@@ -86,10 +86,10 @@ class ScheduleItemController extends Controller
             // Move the uploaded file to the specified directory
             try {
                 // Ensure the directory exists
-                Storage::disk('public')->makeDirectory('mp4');
+                Storage::disk('public')->makeDirectory('mp4s');
 
                 // Attempt to move the uploaded file to the specified directory
-                $file->storeAs('public/mp4', $filename);
+                $file->storeAs('public/mp4s', $filename);
             } catch (\Exception $e) {
                 // An error occurred while moving the file; handle this error
                 return back()->withInput()->withErrors(['resource_filename' => 'The resource filename failed to upload.']);
@@ -154,5 +154,7 @@ class ScheduleItemController extends Controller
         return redirect()->route('schedules.show', ['schedule' => $scheduleId])
             ->with('success', 'Schedule item deleted successfully.');
     }
+
+
 
 }
