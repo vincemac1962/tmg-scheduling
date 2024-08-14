@@ -211,4 +211,6 @@ class SitesController extends Controller
             'site_name' => 'required'
         ]);
     }
+
+
 }
