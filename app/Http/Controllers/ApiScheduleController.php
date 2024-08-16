@@ -18,26 +18,32 @@ class ApiScheduleController extends Controller
             ->where('site_id', $siteId)
             ->join('schedules', 'schedule_site.schedule_id', '=', 'schedules.id')
             ->select('schedules.*')
-            ->first();
+            ->get();
 
         if (!$schedule) {
             return response()->json(['error' => 'Schedule not found.'], 404);
         }
 
-        $scheduleItems = DB::table('schedule_items')
-            ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
-            ->where('schedule_items.schedule_id', $schedule->id)
-            ->select(
-                'schedule_items.id',
-                'schedule_items.schedule_id',
-                'schedule_items.advertiser_id',
-                'schedule_items.title',
-                'schedule_items.start_date',
-                'schedule_items.end_date',
-                'schedule_items.file',
-                'uploads.resource_type'
-            )
-            ->get();
+        $scheduleItems = collect();
+
+        foreach ($schedule as $sched) {
+            $items = DB::table('schedule_items')
+                ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
+                ->where('schedule_items.schedule_id', $sched->id)
+                ->select(
+                    'schedule_items.id',
+                    'schedule_items.schedule_id',
+                    'schedule_items.advertiser_id',
+                    'schedule_items.title',
+                    'schedule_items.start_date',
+                    'schedule_items.end_date',
+                    'schedule_items.file',
+                    'uploads.resource_type'
+                )
+                ->get();
+
+            $scheduleItems = $scheduleItems->merge($items);
+        }
 
         // Step 2: Filter Items with Null Advertiser ID
         $nullAdvertiserItems = $scheduleItems->filter(function ($item) {
@@ -120,7 +126,8 @@ class ApiScheduleController extends Controller
         ]);
 
         // Retrieve the file path from the request
-        $filePath = storage_path('app/public/' . $request->input('file_path'));
+        //$filePath = storage_path('app/public/' . $request->input('file_path'));
+        $filePath = public_path('storage/' . $request->input('file_path'));
 
         // Log the file path for debugging
         Log::info('Checking file path: ' . $filePath);

@@ -225,13 +225,13 @@ class AdvertiserController extends Controller
                 $abbreviation = $field === 'banner' ? 'ban' : ($field === 'button' ? 'btn' : 'mp4');
                 $newFilename = $advertiser->contract . '_' . $abbreviation . '_' . $originalName;
 
-                $storagePath = $file->storeAs($path, $newFilename);
+                $storagePath = $file->storeAs('public/' . $path, $newFilename);
 
                 $upload = new Upload();
                 $upload->advertiser_id = $advertiser->id;
                 $upload->resource_type = $abbreviation;
                 $upload->resource_filename = $newFilename;
-                $upload->resource_path = $storagePath;
+                $upload->resource_path = $path . '/' . $newFilename;
                 $upload->is_uploaded = true;
                 $upload->uploaded_by = auth()->id();
                 $upload->uploaded_at = now();
@@ -243,7 +243,7 @@ class AdvertiserController extends Controller
                     $scheduleItem->schedule_id = $request->schedule_id;
                     $scheduleItem->upload_id = $upload->id;
                     $scheduleItem->advertiser_id = $advertiser->id;
-                    $scheduleItem->file = $storagePath;
+                    $scheduleItem->file = $path . '/' . $newFilename;
                     $scheduleItem->created_by = auth()->id();
                     $scheduleItem->save();
                 }
