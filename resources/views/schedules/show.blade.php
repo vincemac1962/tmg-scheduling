@@ -6,7 +6,12 @@
         <p><strong>ID: </strong>{{$schedule->id}}</p>
         <p><strong>Title: </strong>{{$schedule->title}}</p>
         <p style="word-wrap: break-word"><strong>Description: </strong>{{ $schedule->description }}</p>
-        <p><strong>Created By: </strong>{{$schedule->site_id}}</p>
+        <p><strong>Sites (Downloaded/Total): </strong>
+            <span class="{{ ($schedule->downloaded_sites_count < $schedule->sites_count || $schedule->sites_count == 0) ? 'text-red-500' : 'text-green-500' }}">
+                    {{ $schedule->downloaded_sites_count ?? 0 }}/{{ $schedule->sites_count ?? 0 }}
+            </span>
+        </p>
+        <p><strong>Created By: </strong>{{$schedule->creator->name}}</p>
         <p><strong>Last Modified: </strong>{{$schedule->updated_at->format('d/m/Y H:i') }}</p>
         <p><strong>Created: </strong>{{$schedule->created_at->format('d/m/Y H:i') }}</p>
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">

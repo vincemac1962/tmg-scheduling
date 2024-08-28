@@ -21,7 +21,9 @@ class Site extends Model
         'site_notes'
     ];
 
-    public function schedules() {
-        return $this->belongsToMany(Schedule::class, 'schedule_site');
+    public function schedules()
+    {
+        return $this->belongsToMany(Schedule::class, 'schedule_site', 'site_id', 'schedule_id')
+            ->withPivot('downloaded', 'downloaded_at');
     }
 }

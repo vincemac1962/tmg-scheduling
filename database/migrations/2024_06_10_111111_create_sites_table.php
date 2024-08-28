@@ -15,6 +15,7 @@ class CreateSitesTable extends Migration
     {
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
+            $table->integer('site_group_id')->nullable();
             $table->string('site_ref');
             $table->string('site_name');
             $table->string('site_address')->nullable();
@@ -24,6 +25,7 @@ class CreateSitesTable extends Migration
             $table->string('site_email')->nullable();
             $table->boolean('site_active')->default(true);
             $table->string('site_notes')->nullable();
+            $table->dateTime('site_last_contact')->nullable();
             $table->dateTime('site_last_updated')->nullable();
             $table->timestamps();
         });

@@ -24,7 +24,32 @@ class ScheduleController extends Controller
      */
 
     // index method
+    // ScheduleController.php
+
     public function index(Request $request)
+    {
+        // Unset the session variable
+        session()->forget('schedule_id');
+
+        // Check if the user wants to view all schedules
+        $viewAll = $request->input('view_all', false);
+
+        // Retrieve schedules with the necessary conditions
+        $query = Schedule::withCount(['sites', 'sites as downloaded_sites_count' => function ($query) {
+            $query->where('downloaded', true);
+        }]);
+
+        if (!$viewAll) {
+            $query->havingRaw('downloaded_sites_count < sites_count OR sites_count = 0');
+        }
+
+        $schedules = $query->paginate(10);
+
+        $header = 'Schedules Index';
+
+        return view('schedules.index', compact('schedules', 'header', 'viewAll'));
+    }
+    /*public function index(Request $request)
     {
         // unset the session variable
         session()->forget('schedule_id');
@@ -36,11 +61,14 @@ class ScheduleController extends Controller
         $header = 'Schedules Index';
 
         return view('schedules.index', compact('schedules', 'header'));
-    }
+    }*/
 
     public function show($id)
     {
-        $schedule = Schedule::findOrFail($id);
+        $schedule = Schedule::withCount(['sites', 'sites as downloaded_sites_count' => function ($query) {
+            $query->where('downloaded', true);
+        }])->findOrFail($id);
+
         session(['schedule_id' => $id]);
         $scheduleItems = $schedule->scheduleItems()->paginate(10);
 
@@ -132,10 +160,16 @@ class ScheduleController extends Controller
     // show associated sites
     public function showAssociatedSites($scheduleId) {
         $schedule = Schedule::findOrFail($scheduleId);
-        $sites = $schedule->sites()->select('sites.id', 'site_ref', 'site_name', 'site_address')->get();
+        $sites = $schedule->sites()
+            ->select('sites.id', 'site_ref', 'site_name', 'site_address')
+            ->withPivot('downloaded', 'downloaded_at')
+            ->get();
+        //var_dump($sites);
+        //die();
         $header = 'Associated Sites for Schedule ' . $scheduleId;
         return view('schedules.associated_sites', compact('sites', 'header', 'scheduleId'));
     }
+
 
     // remove associated site
     public function removeAssociatedSite($scheduleId, $siteId) {

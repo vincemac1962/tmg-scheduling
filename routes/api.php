@@ -34,3 +34,4 @@ Route::post('/log-schedule', [ApiScheduleController::class, 'logScheduleUpload']
 
 // route to get site id
 Route::get('/get-site-id', [ApiScheduleController::class, 'getSiteId']);
+
