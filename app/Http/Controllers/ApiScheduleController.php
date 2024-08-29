@@ -10,23 +10,29 @@ class ApiScheduleController extends Controller
 {
     public function getSchedules($siteId)
     {
-        // Retrieve Schedules and Schedule Items
+        // Retrieve the site by site_ref
         $site = DB::table('sites')->where('site_ref', $siteId)->first();
+        if (!$site) {
+            return response()->json(['error' => 'Site not found.'], 404);
+        }
         $siteId = $site->id;
 
-        $schedule = DB::table('schedule_site')
+        // Retrieve schedules where 'downloaded' is false
+        $schedules = DB::table('schedule_site')
             ->where('site_id', $siteId)
+            ->where('downloaded', false)
             ->join('schedules', 'schedule_site.schedule_id', '=', 'schedules.id')
             ->select('schedules.*')
             ->get();
 
-        if (!$schedule) {
-            return response()->json(['error' => 'Schedule not found.'], 404);
+        // Check if any schedules are found
+        if ($schedules->isEmpty()) {
+            return response()->json(['message' => 'No schedules available for download.'], 200);
         }
 
         $scheduleItems = collect();
 
-        foreach ($schedule as $sched) {
+        foreach ($schedules as $sched) {
             $items = DB::table('schedule_items')
                 ->leftJoin('uploads', 'schedule_items.upload_id', '=', 'uploads.id')
                 ->where('schedule_items.schedule_id', $sched->id)
@@ -45,19 +51,19 @@ class ApiScheduleController extends Controller
             $scheduleItems = $scheduleItems->merge($items);
         }
 
-        // Step 2: Filter Items with Null Advertiser ID
+        // Filter Items with Null Advertiser ID
         $nullAdvertiserItems = $scheduleItems->filter(function ($item) {
             return is_null($item->advertiser_id);
         });
 
-        // Step 3: Retrieve and Merge Items with Advertiser ID
+        // Retrieve and Merge Items with Advertiser ID
         $nonNullAdvertiserItems = $scheduleItems->filter(function ($item) {
             return !is_null($item->advertiser_id);
         });
 
         $mergedItems = $nullAdvertiserItems->merge($nonNullAdvertiserItems);
 
-        // Step 4: Process Advertiser Data
+        // Process Advertiser Data
         $advertiserData = [];
         $uniqueAdvertiserIds = $mergedItems->pluck('advertiser_id')->unique();
 
@@ -108,9 +114,9 @@ class ApiScheduleController extends Controller
             }
         }
 
-        // Step 5: Create and Return Result Array
+        // Create and Return Result Array
         $result[] = [
-            'schedule' => $schedule,
+            'schedules' => $schedules,
             'items' => $mergedItems,
             'advertisers' => $advertiserData
         ];
