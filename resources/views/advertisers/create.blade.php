@@ -12,7 +12,7 @@
             </ul>
         </div>
     @endif
-    <form method="POST" action="{{ route('advertisers.store') }}" enctype="multipart/form-data">
+    <form id="advertiserForm" method="POST" action="{{ route('advertisers.store') }}" enctype="multipart/form-data">
     @csrf
     <div id="new_advertiser_fields">
         <div class="flex justify-between items-center mt-3">
@@ -110,5 +110,21 @@
 
     </form>
 </div>
+
+<script>
+    document.getElementById('advertiserForm').addEventListener('submit', function(event) {
+        const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+        const banner = document.getElementById('banner').files[0];
+        const button = document.getElementById('button').files[0];
+        const mp4 = document.getElementById('mp4').files[0];
+
+        if ((banner && banner.size > maxFileSize) ||
+            (button && button.size > maxFileSize) ||
+            (mp4 && mp4.size > maxFileSize)) {
+            alert('One or more files exceed the 10MB size limit.');
+            event.preventDefault();
+        }
+    });
+</script>
 
 @endsection

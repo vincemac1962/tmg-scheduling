@@ -202,4 +202,10 @@ class ApiScheduleController extends Controller
             return response()->json(['error' => 'Site not found.'], 404);
         }
     }
+
+    // ToDo: remove this method
+    public function getFoo() {
+        $foo = "foo";
+        return response()->json(['id' => $foo]);
+    }
 }

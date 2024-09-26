@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiScheduleController;
 use App\Http\Controllers\ApiScheduleItemController;
+use App\Http\Controllers\ApiSiteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,18 +21,26 @@ use App\Http\Controllers\ApiScheduleItemController;
     return $request->user();
 }); */
 
-// Route to get schedules
-Route::get('/schedules/{siteId}', [ApiScheduleController::class, 'getSchedules']);
+Route::middleware('log.route')->group(function () {
+    // Route to get schedules
+    Route::get('/schedules/{siteId}', [ApiScheduleController::class, 'getSchedules']);
 
-// Route to get files
-Route::get('/get-file', [ApiScheduleController::class, 'getFile']);
+    // Route to get files
+    Route::get('/get-file', [ApiScheduleController::class, 'getFile']);
 
-// Route to log upload
-Route::post('/log-upload', [ApiScheduleItemController::class, 'logItemUpload']);
+    // Route to log upload
+    Route::post('/log-upload', [ApiScheduleItemController::class, 'logItemUpload']);
 
-// Route to log schedule download
-Route::post('/log-schedule', [ApiScheduleController::class, 'logScheduleUpload']);
+    // Route to log schedule download
+    Route::post('/log-schedule', [ApiScheduleController::class, 'logScheduleUpload']);
 
-// route to get site id
-Route::get('/get-site-id', [ApiScheduleController::class, 'getSiteId']);
+    // route to get site id
+    Route::get('/get-site-id', [ApiScheduleController::class, 'getSiteId']);
+
+    // Route to register site for content
+    Route::post('/register-content', [ApiSiteController::class, 'registerSite']);
+
+
+});
+
 
