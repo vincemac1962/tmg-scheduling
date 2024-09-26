@@ -203,9 +203,4 @@ class ApiScheduleController extends Controller
         }
     }
 
-    // ToDo: remove this method
-    public function getFoo() {
-        $foo = "foo";
-        return response()->json(['id' => $foo]);
-    }
 }
