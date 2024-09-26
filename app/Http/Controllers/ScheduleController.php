@@ -119,6 +119,17 @@ class ScheduleController extends Controller
         $schedule->delete();
         return redirect()->route('schedules.index');
     }
+    // used to return a list of advertisers without upload items
+    public function getAdvertiserDetails($advertiserId)
+    {
+        // find advertiser by id
+        $advertiser = Advertiser::find($advertiserId);
+        if ($advertiser) {
+            // return advertiser contract and business name
+            return $advertiser->contract . ' - ' . $advertiser->business_name;
+        }
+        return null;
+    }
 
     public function addSelectedAdvertisers(Request $request)
     {
@@ -128,9 +139,17 @@ class ScheduleController extends Controller
         foreach ($advertiserIds as $advertiserId) {
             $uploads = Upload::where('advertiser_id', $advertiserId)->get();
 
+            if ($uploads->isEmpty()) {
+                $error = 'Uploads missing for: ' . $this->getAdvertiserDetails($advertiserId);
+                if ($error) {
+                    session()->flash('errors', session('errors', new \Illuminate\Support\MessageBag)->add('advertiser_error', $error));
+                }
+                continue;
+            }
+
             foreach ($uploads as $upload) {
                 $scheduleItem = new \App\Models\ScheduleItem();
-                $scheduleItem->schedule_id = session('schedule_id');
+                $scheduleItem->schedule_id = $scheduleId;
                 $scheduleItem->upload_id = $upload->id;
                 $scheduleItem->advertiser_id = $advertiserId;
                 $scheduleItem->file = $upload->resource_path . $upload->resource_filename;
