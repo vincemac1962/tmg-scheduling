@@ -84,14 +84,23 @@
         <div class="flex justify-between items-center mt-3">
             <label for="banner" class="w-1/4 text-left mr-2">Banner:</label>
             <input type="file" id="banner" name="banner" class="form-control w-3/4">
+            @isset($advertiser->banner)
+                <span class="ml-2">{{ basename($advertiser->banner) }}</span>
+            @endisset
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="button" class="w-1/4 text-left mr-2">Button:</label>
             <input type="file" id="button" name="button" class="form-control w-3/4">
+            @isset($advertiser->button)
+                <span class="ml-2">{{ basename($advertiser->button) }}</span>
+            @endisset
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="mp4" class="w-1/4 text-left mr-2">MP4:</label>
             <input type="file" id="mp4" name="mp4" class="form-control w-3/4">
+            @isset($advertiser->mp4)
+                <span class="ml-2">{{ basename($advertiser->mp4) }}</span>
+            @endisset
         </div>
         <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
         @if(isset($schedule->id))

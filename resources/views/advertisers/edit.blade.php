@@ -1,4 +1,4 @@
-<!-- This is the create form for adding an advertiser -->
+<!-- This is the edit form for updating an advertiser -->
 @extends('layouts.app')
 
 @section('content')
@@ -84,15 +84,24 @@
         <hr>
         <div class="flex justify-between items-center mt-3">
             <label for="banner" class="w-1/4 text-left mr-2">Banner:</label>
-            <input type="file" id="banner" name="banner" class="form-control w-3/4" value="{{ $advertiser->banner }}">
+            <input type="file" id="banner" name="banner" class="form-control w-3/4">
+            @if($advertiser->banner)
+                <span class="ml-2">{{ basename($advertiser->banner) }}</span>
+            @endif
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="button" class="w-1/4 text-left mr-2">Button:</label>
-            <input type="file" id="button" name="button" class="form-control w-3/4" value="{{ $advertiser->button }}">
+            <input type="file" id="button" name="button" class="form-control w-3/4">
+            @if($advertiser->button)
+                <span class="ml-2">{{ basename($advertiser->button) }}</span>
+            @endif
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="mp4" class="w-1/4 text-left mr-2">MP4:</label>
-            <input type="file" id="mp4" name="mp4" class="form-control w-3/4" value="{{ $advertiser->mp4}}">
+            <input type="file" id="mp4" name="mp4" class="form-control w-3/4">
+            @if($advertiser->mp4)
+                <span class="ml-2">{{ basename($advertiser->mp4) }}</span>
+            @endif
         </div>
         <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
         <input type="hidden" id="schedule_id" name="schedule_id" value="{{ session('schedule_id') }}">

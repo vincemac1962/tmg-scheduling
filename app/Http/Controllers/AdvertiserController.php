@@ -8,6 +8,7 @@ use App\Models\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Arr;
 
 class AdvertiserController extends Controller
 {
@@ -93,85 +94,62 @@ class AdvertiserController extends Controller
 
     public function store(Request $request)
     {
-        $advertiser = $this->saveAdvertiser($request);
-        $scheduleId = session('schedule_id');
-        $this->handleFileUploads($request, $advertiser);
-        if (session()->has('schedule_id')) {
-            return redirect()->route('schedules.show', ['schedule' => session('schedule_id')])
-                ->with('success', 'Advertiser created successfully.');
-        } else {
-            return redirect()->route('advertisers.index')
-                ->with('success', 'Advertiser created successfully.');
-        }
+        $validatedData = $this->validateAdvertiser($request);
+        $advertiser = new Advertiser();
+        $this->fillAdvertiser($advertiser, $validatedData, $request);
+        $advertiser->save();
+        //$this->handleFileUploads($request, $advertiser, true);
+
+        return $this->redirectAfterSave();
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @throws ValidationException
-     */
     public function update(Request $request, int $id)
     {
-        try {
-            $advertiser = Advertiser::findOrFail($id);
-            $this->saveAdvertiser($request, $advertiser);
-        } catch (\Exception $e) {
-            // ToDo: remove next line when testing is finished
-            //Log::error('Error updating advertiser: ' . $e->getMessage());
-            throw ValidationException::withMessages(['error' => 'Error updating advertiser.']);
-        }
+        $advertiser = Advertiser::findOrFail($id);
+        $validatedData = $this->validateAdvertiser($request, false);
+        $this->fillAdvertiser($advertiser, $validatedData, $request);
+        $advertiser->save();
+        //$this->handleFileUploads($request, $advertiser, false);
 
-        // ToDo: remove next line when testing is finished
-        //Log::debug('Session Data', session()->all());
+        return $this->redirectAfterSave();
+    }
+
+    private function redirectAfterSave()
+    {
         if (session()->has('schedule_id')) {
             return redirect()->route('schedules.show', ['schedule' => session('schedule_id')])
-                ->with('success', 'Advertiser updated successfully.');
+                ->with('success', 'Advertiser saved successfully.');
         } else {
             return redirect()->route('advertisers.index')
-                ->with('success', 'Advertiser updated successfully.');
+                ->with('success', 'Advertiser saved successfully.');
         }
     }
 
-
-
-    /**
-     * Stores a record.
-     * @throws ValidationException
-     */
-    private function saveAdvertiser(Request $request, Advertiser $advertiser = null)
+    private function validateAdvertiser(Request $request, $isNew = true)
     {
-        $isNew = false;
-        if (!$advertiser) {
-            $advertiser = new Advertiser();
-            $isNew = true;
+        $rules = [
+            'business_name' => 'required',
+            'banner' => 'file|mimes:png',
+            'button' => 'file|mimes:png',
+        ];
+
+        $rules['contract'] = $isNew ? 'required|unique:advertisers,contract' : 'required|unique:advertisers,contract,' . $request->id;
+
+        if ($isNew) {
+            $rules['mp4'] = 'required|file|mimes:mp4';
+        } else {
+            $rules['mp4'] = 'nullable|file|mimes:mp4';
         }
 
-        try {
-            $rules = [
-                'business_name' => 'required',
-                'banner' => 'file|mimes:png',
-                'button' => 'file|mimes:png',
-            ];
+        return $request->validate($rules);
+    }
 
-            // Modify the contract validation rule based on whether it's a new or existing record
-            $rules['contract'] = $isNew ? 'required|unique:advertisers,contract' : 'required|unique:advertisers,contract,' . $advertiser->id;
+    private function fillAdvertiser(Advertiser $advertiser, array $validatedData, Request $request)
+    {
+        // Exclude file fields from the fill method
+        $advertiser->fill(Arr::except($validatedData, ['banner', 'button', 'mp4']));
 
-            // Modify the mp4 validation rule based on whether it's a new or existing record
-            if ($isNew) {
-                $rules['mp4'] = 'required|file|mimes:mp4';
-            } else {
-                $rules['mp4'] = 'nullable|file|mimes:mp4';
-            }
-
-            $validatedData = $request->validate($rules);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation errors: ', $e->validator->errors()->all());
-            throw $e; // rethrow the exception so that Laravel can handle it and redirect back with errors
-        }
-
-        // fill the advertiser model with validated data
-        $advertiser->fill($validatedData);
-        // fill the model with additional data
+        // Set other attributes
         $advertiser->address_1 = $request->input('address_1', null);
         $advertiser->address_2 = $request->input('address_2', null);
         $advertiser->street = $request->input('street', null);
@@ -189,29 +167,7 @@ class AdvertiserController extends Controller
         $advertiser->is_deleted = false;
         $advertiser->created_by = auth()->id();
 
-        // Check and store the file name for banner
-        if ($request->hasFile('banner')) {
-            $advertiser->banner = $request->file('banner')->getClientOriginalName();
-        }
-
-        // Check and store the file name for button
-        if ($request->hasFile('button')) {
-            $advertiser->button = $request->file('button')->getClientOriginalName();
-        }
-
-        // Check and store the file name for mp4
-        if ($request->hasFile('mp4')) {
-            $advertiser->mp4 = $request->file('mp4')->getClientOriginalName();
-        }
-        $advertiser->save();
-
-        // File handling logic (omitted for brevity)
-
-        return $advertiser;
-    }
-
-    private function handleFileUploads(Request $request, Advertiser $advertiser)
-    {
+        // Handle file uploads
         $filePaths = [
             'banner' => 'banners',
             'button' => 'buttons',
@@ -236,11 +192,13 @@ class AdvertiserController extends Controller
                 $upload->uploaded_by = auth()->id();
                 $upload->uploaded_at = now();
                 $upload->save();
-                $specificVariable = session('schedule_id', 'Schedule ID not found');
-                \Log::info('Specific session variable:', ['schedule_id' => $specificVariable]);
+
+                // Set the file path on the advertiser model
+                $advertiser->$field = $path . '/' . $newFilename;
+
                 if (session()->has('schedule_id')) {
                     $scheduleItem = new \App\Models\ScheduleItem();
-                    $scheduleItem->schedule_id = $request->schedule_id;
+                    $scheduleItem->schedule_id = session('schedule_id');
                     $scheduleItem->upload_id = $upload->id;
                     $scheduleItem->advertiser_id = $advertiser->id;
                     $scheduleItem->file = $path . '/' . $newFilename;
@@ -250,6 +208,49 @@ class AdvertiserController extends Controller
             }
         }
     }
+
+    /*private function handleFileUploads(Request $request, Advertiser $advertiser, $isNew = true)
+    {
+        $filePaths = [
+            'banner' => 'banners',
+            'button' => 'buttons',
+            'mp4' => 'mp4s',
+        ];
+
+        foreach ($filePaths as $field => $path) {
+            if ($request->hasFile($field) && ($isNew || $request->file($field)->getClientOriginalName() !== $advertiser->$field)) {
+                $file = $request->file($field);
+                $originalName = $file->getClientOriginalName();
+                $abbreviation = $field === 'banner' ? 'ban' : ($field === 'button' ? 'btn' : 'mp4');
+                $newFilename = $advertiser->contract . '_' . $abbreviation . '_' . $originalName;
+
+                $storagePath = $file->storeAs('public/' . $path, $newFilename);
+
+                $upload = new Upload();
+                $upload->advertiser_id = $advertiser->id;
+                $upload->resource_type = $abbreviation;
+                $upload->resource_filename = $newFilename;
+                $upload->resource_path = $path . '/' . $newFilename;
+                $upload->is_uploaded = true;
+                $upload->uploaded_by = auth()->id();
+                $upload->uploaded_at = now();
+                $upload->save();
+
+                // Set the file path on the advertiser model
+                $advertiser->$field = $path . '/' . $newFilename;
+
+                if (session()->has('schedule_id')) {
+                    $scheduleItem = new \App\Models\ScheduleItem();
+                    $scheduleItem->schedule_id = session('schedule_id');
+                    $scheduleItem->upload_id = $upload->id;
+                    $scheduleItem->advertiser_id = $advertiser->id;
+                    $scheduleItem->file = $path . '/' . $newFilename;
+                    $scheduleItem->created_by = auth()->id();
+                    $scheduleItem->save();
+                }
+            }
+        }
+    } */
 
     /**
      * Remove the specified resource from storage.
