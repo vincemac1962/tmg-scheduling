@@ -129,18 +129,17 @@ class ScheduleItemController extends Controller
 
     public function show(int $id)
     {
-        $scheduleItem = ScheduleItem::with('upload')->find($id);
+        $scheduleItem = ScheduleItem::with(['upload', 'creator'])->find($id);
 
         if ($scheduleItem === null) {
-            // Handle the case where the schedule item was not found
             abort(404);
         }
 
-        $data = array(
+        $data = [
             'header' => 'Schedule Item Details',
             'scheduleItem' => $scheduleItem
-        );
-        //dd($data);
+        ];
+
         return view('schedule_items.show')->with($data);
     }
     // destroy method

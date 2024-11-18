@@ -152,7 +152,7 @@ class ScheduleController extends Controller
                 $scheduleItem->schedule_id = $scheduleId;
                 $scheduleItem->upload_id = $upload->id;
                 $scheduleItem->advertiser_id = $advertiserId;
-                $scheduleItem->file = $upload->resource_path . $upload->resource_filename;
+                $scheduleItem->file = $upload->resource_path;
                 $scheduleItem->created_by = auth()->id();
                 $scheduleItem->save();
             }

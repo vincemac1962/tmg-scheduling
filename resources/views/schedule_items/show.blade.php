@@ -9,7 +9,8 @@
         <p><strong>End Date: </strong>{{$scheduleItem->end_date}}</p>
         <p><strong>Type: </strong>{{$scheduleItem->upload->resource_type}}</p>
         <p><strong>File: </strong>{{$scheduleItem->file}}</p>
-        <p><strong>Created By: </strong>{{$scheduleItem->created_by}}</p>
+        <p><a href="{{ asset('storage/' . $scheduleItem->file) }}" target="_blank" class="text-blue-500 hover:text-blue-700">View File</a></p>
+        <p><strong>Created By: </strong>{{ $scheduleItem->creator->name }}</p>
         <hr>
         <div class="flex justify-center mt-4">
             <button onclick="history.back()" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Back</button>

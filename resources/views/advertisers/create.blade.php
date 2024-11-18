@@ -81,9 +81,11 @@
             </div>
         </div>
         <hr>
+        <!-- ToDo: add option to remove existing files -->
         <div class="flex justify-between items-center mt-3">
             <label for="banner" class="w-1/4 text-left mr-2">Banner:</label>
             <input type="file" id="banner" name="banner" class="form-control w-3/4">
+            <button type="button" onclick="clearInput('banner')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
             @isset($advertiser->banner)
                 <span class="ml-2">{{ basename($advertiser->banner) }}</span>
             @endisset
@@ -91,6 +93,7 @@
         <div class="flex justify-between items-center mt-3">
             <label for="button" class="w-1/4 text-left mr-2">Button:</label>
             <input type="file" id="button" name="button" class="form-control w-3/4">
+            <button type="button" onclick="clearInput('button')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
             @isset($advertiser->button)
                 <span class="ml-2">{{ basename($advertiser->button) }}</span>
             @endisset
@@ -98,6 +101,7 @@
         <div class="flex justify-between items-center mt-3">
             <label for="mp4" class="w-1/4 text-left mr-2">MP4:</label>
             <input type="file" id="mp4" name="mp4" class="form-control w-3/4">
+            <button type="button" onclick="clearInput('mp4')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
             @isset($advertiser->mp4)
                 <span class="ml-2">{{ basename($advertiser->mp4) }}</span>
             @endisset
@@ -134,6 +138,10 @@
             event.preventDefault();
         }
     });
+
+    function clearInput(inputId) {
+        document.getElementById(inputId).value = '';
+    }
 </script>
 
 @endsection

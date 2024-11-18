@@ -30,6 +30,11 @@ class ScheduleItem extends Model
         return $this->belongsTo(Schedule::class);
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function upload()
     {
         return $this->hasOne(Upload::class, 'id', 'upload_id');

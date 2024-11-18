@@ -82,26 +82,21 @@
             </div>
         </div>
         <hr>
+        <!-- ToDo: remove the existing files from storage -->
         <div class="flex justify-between items-center mt-3">
             <label for="banner" class="w-1/4 text-left mr-2">Banner:</label>
-            <input type="file" id="banner" name="banner" class="form-control w-3/4">
-            @if($advertiser->banner)
-                <span class="ml-2">{{ basename($advertiser->banner) }}</span>
-            @endif
+            <input type="file" id="banner" name="banner" class="form-control w-3/4" value="{{ isset($advertiser->banner) ? basename($advertiser->banner) : '' }}">
+            <button type="button" onclick="clearInput('banner')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="button" class="w-1/4 text-left mr-2">Button:</label>
-            <input type="file" id="button" name="button" class="form-control w-3/4">
-            @if($advertiser->button)
-                <span class="ml-2">{{ basename($advertiser->button) }}</span>
-            @endif
+            <input type="file" id="button" name="button" class="form-control w-3/4" value="{{ isset($advertiser->button) ? basename($advertiser->button) : '' }}">
+            <button type="button" onclick="clearInput('button')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="mp4" class="w-1/4 text-left mr-2">MP4:</label>
-            <input type="file" id="mp4" name="mp4" class="form-control w-3/4">
-            @if($advertiser->mp4)
-                <span class="ml-2">{{ basename($advertiser->mp4) }}</span>
-            @endif
+            <input type="file" id="mp4" name="mp4" class="form-control w-3/4" value="{{ isset($advertiser->mp4) ? basename($advertiser->mp4) : '' }}">
+            <button type="button" onclick="clearInput('mp4')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
         </div>
         <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
         <input type="hidden" id="schedule_id" name="schedule_id" value="{{ session('schedule_id') }}">
@@ -113,5 +108,25 @@
 
     </form>
 </div>
+
+<script>
+    document.getElementById('advertiserForm').addEventListener('submit', function(event) {
+        const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+        const banner = document.getElementById('banner').files[0];
+        const button = document.getElementById('button').files[0];
+        const mp4 = document.getElementById('mp4').files[0];
+
+        if ((banner && banner.size > maxFileSize) ||
+            (button && button.size > maxFileSize) ||
+            (mp4 && mp4.size > maxFileSize)) {
+            alert('One or more files exceed the 10MB size limit.');
+            event.preventDefault();
+        }
+    });
+
+    function clearInput(inputId) {
+        document.getElementById(inputId).value = '';
+    }
+</script>
 
 @endsection

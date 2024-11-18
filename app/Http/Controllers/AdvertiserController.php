@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Advertiser;
 use App\Models\Schedule;
+use App\Models\ScheduleItem;
 use App\Models\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -69,6 +70,7 @@ class AdvertiserController extends Controller
      */
     public function show(int $id)
     {
+        // ToDo - show user name for created (Last edited by already exists)
         $advertiser = Advertiser::find($id);
         $data = array(
             'header' => 'Advertiser Details',
@@ -98,8 +100,6 @@ class AdvertiserController extends Controller
         $advertiser = new Advertiser();
         $this->fillAdvertiser($advertiser, $validatedData, $request);
         $advertiser->save();
-        //$this->handleFileUploads($request, $advertiser, true);
-
         return $this->redirectAfterSave();
     }
 
@@ -109,8 +109,6 @@ class AdvertiserController extends Controller
         $validatedData = $this->validateAdvertiser($request, false);
         $this->fillAdvertiser($advertiser, $validatedData, $request);
         $advertiser->save();
-        //$this->handleFileUploads($request, $advertiser, false);
-
         return $this->redirectAfterSave();
     }
 
@@ -166,6 +164,8 @@ class AdvertiserController extends Controller
         $advertiser->is_active = true;
         $advertiser->is_deleted = false;
         $advertiser->created_by = auth()->id();
+        // save the advertiser
+        $advertiser->save();
 
         // Handle file uploads
         $filePaths = [
@@ -197,7 +197,7 @@ class AdvertiserController extends Controller
                 $advertiser->$field = $path . '/' . $newFilename;
 
                 if (session()->has('schedule_id')) {
-                    $scheduleItem = new \App\Models\ScheduleItem();
+                    $scheduleItem = new ScheduleItem();
                     $scheduleItem->schedule_id = session('schedule_id');
                     $scheduleItem->upload_id = $upload->id;
                     $scheduleItem->advertiser_id = $advertiser->id;
@@ -209,48 +209,6 @@ class AdvertiserController extends Controller
         }
     }
 
-    /*private function handleFileUploads(Request $request, Advertiser $advertiser, $isNew = true)
-    {
-        $filePaths = [
-            'banner' => 'banners',
-            'button' => 'buttons',
-            'mp4' => 'mp4s',
-        ];
-
-        foreach ($filePaths as $field => $path) {
-            if ($request->hasFile($field) && ($isNew || $request->file($field)->getClientOriginalName() !== $advertiser->$field)) {
-                $file = $request->file($field);
-                $originalName = $file->getClientOriginalName();
-                $abbreviation = $field === 'banner' ? 'ban' : ($field === 'button' ? 'btn' : 'mp4');
-                $newFilename = $advertiser->contract . '_' . $abbreviation . '_' . $originalName;
-
-                $storagePath = $file->storeAs('public/' . $path, $newFilename);
-
-                $upload = new Upload();
-                $upload->advertiser_id = $advertiser->id;
-                $upload->resource_type = $abbreviation;
-                $upload->resource_filename = $newFilename;
-                $upload->resource_path = $path . '/' . $newFilename;
-                $upload->is_uploaded = true;
-                $upload->uploaded_by = auth()->id();
-                $upload->uploaded_at = now();
-                $upload->save();
-
-                // Set the file path on the advertiser model
-                $advertiser->$field = $path . '/' . $newFilename;
-
-                if (session()->has('schedule_id')) {
-                    $scheduleItem = new \App\Models\ScheduleItem();
-                    $scheduleItem->schedule_id = session('schedule_id');
-                    $scheduleItem->upload_id = $upload->id;
-                    $scheduleItem->advertiser_id = $advertiser->id;
-                    $scheduleItem->file = $path . '/' . $newFilename;
-                    $scheduleItem->created_by = auth()->id();
-                    $scheduleItem->save();
-                }
-            }
-        }
-    } */
 
     /**
      * Remove the specified resource from storage.

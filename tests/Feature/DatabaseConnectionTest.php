@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Exception;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ class DatabaseConnectionTest extends TestCase
         try {
             DB::connection()->getPdo();
             $this->assertTrue(true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail('Could not connect to the database. Please check your configuration. error:' . $e );
         }
     }
