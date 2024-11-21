@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container max-w-4xl mx-auto px-4">
+    <div class="container max-w-4xl mx-auto px-4">
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -12,9 +12,9 @@
             </ul>
         </div>
     @endif
-    <form method="POST" action="{{ route('advertisers.update', $advertiser->id) }}" enctype="multipart/form-data">
-    @method('PUT')
-    @csrf
+        <form method="POST" action="{{ route('advertisers.update', $advertiser->id) }}" enctype="multipart/form-data">
+            @method('PUT')
+            @csrf
     <div id="new_advertiser_fields">
         <div class="flex justify-between items-center mt-3">
             <label for="contract" class="w-1/4 text-left mr-2">Contract:</label>
@@ -81,32 +81,46 @@
                 <label for="sort_order_0">0</label>
             </div>
         </div>
-        <hr>
-        <!-- ToDo: remove the existing files from storage -->
+        <hr class="mt-5">
         <div class="flex justify-between items-center mt-3">
             <label for="banner" class="w-1/4 text-left mr-2">Banner:</label>
-            <input type="file" id="banner" name="banner" class="form-control w-3/4" value="{{ isset($advertiser->banner) ? basename($advertiser->banner) : '' }}">
-            <button type="button" onclick="clearInput('banner')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
+            <span id="banner-filename" class="w-3/4 text-sm mr-4">{{ $advertiser->banner ?? 'N/A' }}</span>
+            <label class="w-3/4 mt-2">
+                <span class="px-2 py-1 bg-green-500 text-white rounded-full cursor-pointer hover:bg-green-700">New File</span>
+                <input type="file" id="banner" name="banner" class="hidden" onchange="updateFilename('banner')">
+            </label>
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="button" class="w-1/4 text-left mr-2">Button:</label>
-            <input type="file" id="button" name="button" class="form-control w-3/4" value="{{ isset($advertiser->button) ? basename($advertiser->button) : '' }}">
-            <button type="button" onclick="clearInput('button')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
+            <span id="button-filename" class="w-3/4 text-sm mr-4">{{ $advertiser->button ?? 'N/A' }}</span>
+            <label class="w-3/4 mt-2">
+                <span class="px-2 py-1 bg-green-500 text-white rounded-full cursor-pointer hover:bg-green-700">New File</span>
+                <input type="file" id="button" name="button" class="hidden" onchange="updateFilename('button')">
+            </label>
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="mp4" class="w-1/4 text-left mr-2">MP4:</label>
-            <input type="file" id="mp4" name="mp4" class="form-control w-3/4" value="{{ isset($advertiser->mp4) ? basename($advertiser->mp4) : '' }}">
-            <button type="button" onclick="clearInput('mp4')" class="ml-2 px-2 py-1 bg-red-500 text-white rounded">Clear</button>
-        </div>
-        <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
-        <input type="hidden" id="schedule_id" name="schedule_id" value="{{ session('schedule_id') }}">
-    </div>
-        <div class="flex justify-center mt-3 space-x-2">
-            <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white">Save Advertiser</button>
-            <a href="{{ route('advertisers.index', $scheduleId) }}" class="px-4 py-2 rounded bg-gray-500 text-white">Cancel</a>
+            <span id="mp4-filename" class="w-3/4 text-sm mr-4">{{ $advertiser->mp4 ?? 'N/A' }}</span>
+            <label class="w-3/4 mt-2">
+                <span class="px-2 py-1 bg-green-500 text-white rounded-full cursor-pointer hover:bg-green-700">New File</span>
+                <input type="file" id="mp4" name="mp4" class="hidden" onchange="updateFilename('mp4')">
+            </label>
         </div>
 
-    </form>
+        <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
+        <input type="hidden" id="schedule_id" name="schedule_id" value="{{ session('schedule_id') }}">
+
+
+    </div>
+
+            <div class="flex justify-center mt-10">
+                <div class="space-x-2">
+                    <a href="{{ route('advertisers.index', $scheduleId) }}" class="px-4 py-2 rounded bg-gray-500 text-white w-40 text-center">Cancel</a>
+                    <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white w-40">Save Advertiser</button>
+                </div>
+            </div>
+
+        </form>
 </div>
 
 <script>
@@ -126,6 +140,16 @@
 
     function clearInput(inputId) {
         document.getElementById(inputId).value = '';
+    }
+
+    function updateFilename(inputId) {
+        const input = document.getElementById(inputId);
+        const filenameSpan = document.getElementById(inputId + '-filename');
+        if (input.files && input.files[0]) {
+            filenameSpan.textContent = input.files[0].name;
+        } else {
+            filenameSpan.textContent = 'N/A';
+        }
     }
 </script>
 

@@ -80,8 +80,7 @@
                 <label for="sort_order_0">0</label>
             </div>
         </div>
-        <hr>
-        <!-- ToDo: add option to remove existing files -->
+        <hr class="mt-5">
         <div class="flex justify-between items-center mt-3">
             <label for="banner" class="w-1/4 text-left mr-2">Banner:</label>
             <input type="file" id="banner" name="banner" class="form-control w-3/4">
@@ -112,13 +111,12 @@
         @endif
     </div>
         <div class="flex justify-center mt-3 space-x-2">
-            <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white">Add Advertiser</button>
             @if(isset($schedule->id))
-            <a href="{{ route('schedules.show', $schedule->id) }}" class="px-4 py-2 rounded bg-gray-500 text-white">Cancel</a>
+                <a href="{{ route('schedules.show', $schedule->id) }}" class="px-4 py-2 rounded bg-gray-500 text-white w-40 text-center">Cancel</a>
             @else
-            <a href="{{ route('advertisers.index') }}" class="px-4 py-2 rounded bg-gray-500 text-white">Cancel</a>
+                <a href="{{ route('advertisers.index') }}" class="px-4 py-2 rounded bg-gray-500 text-white w-40 text-center">Cancel</a>
             @endif
-
+            <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white w-40">Add Advertiser</button>
         </div>
 
     </form>

@@ -1,6 +1,3 @@
-<!-- resources/views/schedules/index.blade.php -->
-
-@php use Illuminate\Support\Str; @endphp
 @extends('layouts.app')
 
 @section('content')
@@ -15,24 +12,38 @@
                     <input type="checkbox" name="view_all" value="1" {{ request('view_all') ? 'checked' : '' }}>
                     View All
                 </label>
-                <a href="#" onclick="this.closest('form').submit()">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                        Apply
-                    <button>
-                </a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                    Apply
+                </button>
             </div>
         </form>
 
+
+
         @if(count($schedules) > 0)
             <table class="min-w-full bg-white">
-                <thead>
+                <thead class="bg-gray-500">
                 <tr>
-                    <th class="py-2 px-4 border-b text-center">ID</th>
-                    <th class="py-2 px-4 border-b">Title</th>
-                    <th class="py-2 px-4 border-b text-center">Updated At</th>
-                    <th class="py-2 px-4 border-b text-center">Created At</th>
-                    <th class="py-2 px-4 border-b text-center">Created By</th>
-                    <th class="py-2 px-4 border-b text-center">Sites (Downloaded/Total)</th>
+                    <th class="py-2 px-4 border-b text-center text-white text-md">
+                        <a href="{{ route('schedules.index', ['sort_by' => 'id', 'direction' => request('sort_by') == 'id' && request('direction') == 'asc' ? 'desc' : 'asc', 'filter' => request('filter')]) }}"
+                           data-te-toggle="tooltip"
+                           title="Click to sort results by ID">ID &nbsp&#9432;
+                        </a>
+                    </th>
+                    <th class="py-2 px-4 border-b text-white text-md">
+                        <a href="{{ route('schedules.index', ['sort_by' => 'title', 'direction' => request('sort_by') == 'title' && request('direction') == 'asc' ? 'desc' : 'asc', 'filter' => request('filter')]) }}"
+                           data-te-toggle="tooltip"
+                           title="Click to sort results by Title">Title &nbsp&#9432;
+                        </a>
+                    </th>
+                    <th class="py-2 px-4 border-b text-center text-white text-md">
+                        <a href="{{ route('schedules.index', ['sort_by' => 'updated_at', 'direction' => request('sort_by') == 'updated_at' && request('direction') == 'asc' ? 'desc' : 'asc', 'filter' => request('filter')]) }}"data-te-toggle="tooltip"
+                           title="Click to sort results by Updated At">Updated At &nbsp&#9432;
+                        </a>
+                    </th>
+                    <th class="py-2 px-4 border-b text-center text-white text-md">Created At</th>
+                    <th class="py-2 px-4 border-b text-center text-white text-md">Created By</th>
+                    <th class="py-2 px-4 border-b text-center text-white text-md">Sites (Downloaded/Total)</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -52,6 +63,14 @@
                 @endforeach
                 </tbody>
             </table>
+
+            <!-- Add New Schedule Button -->
+            <div class="flex justify-center mb-4 mt-10">
+                <a href="{{ route('schedules.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
+                    Add New Schedule
+                </a>
+            </div>
+
             {{ $schedules->links() }}
         @else
             <p class="text-center text-xl text-gray-500">No schedules found</p>

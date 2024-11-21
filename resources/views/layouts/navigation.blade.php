@@ -52,10 +52,6 @@
                             <x-dropdown-link :href="route('schedule_items.index')">
                                 {{ __('View All Schedule Items') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('schedule_items.create')">
-                                {{ __('Create Schedule Item') }}
-                            </x-dropdown-link>
-                            <!-- Add more links for other routes here -->
                         </x-slot>
                     </x-dropdown>
                     <!-- Advertisers dropdown -->

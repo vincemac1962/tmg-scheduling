@@ -75,4 +75,48 @@ class ApiSiteController extends Controller
             return response()->json(['message' => 'Site record inserted successfully.', 'id' => $insertedId]);
         }
     }
+
+    // log site update
+    public function logSiteUpdate(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'site_id' => 'required|integer',
+        ]);
+
+        // Retrieve the site_id from the request
+        $siteId = $request->input('site_id');
+
+        // Update the site_last_contact and site_last_updated columns
+        DB::table('sites')
+            ->where('id', $siteId)
+            ->update([
+                'site_last_contact' => now(),
+                'site_last_updated' => now(),
+            ]);
+
+        return response()->json(['message' => 'Site updated successfully'], 200);
+    }
+
+    // update site table site_last_contact
+    public function updateSiteLastContact(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'site_id' => 'required|integer',
+        ]);
+
+        // Retrieve the site_id from the request
+        $siteId = $request->input('site_id');
+
+        // Update the site_last_contact column
+        DB::table('sites')
+            ->where('id', $siteId)
+            ->update([
+                'site_last_contact' => now(),
+            ]);
+
+        return response()->json(['message' => 'Site last contact updated successfully'], 200);
+    }
+
 }

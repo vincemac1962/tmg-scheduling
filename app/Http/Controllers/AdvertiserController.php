@@ -17,9 +17,7 @@ class AdvertiserController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-
     {
-
         $query = Advertiser::query();
 
         // Filtering
@@ -29,18 +27,19 @@ class AdvertiserController extends Controller
         }
 
         // Sorting
-        if ($request->has('sort_by')) {
+        if ($request->has('sort_by') && in_array($request->sort_by, ['contract', 'business_name', 'updated_at'])) {
             $direction = $request->direction ?? 'asc';
             $query->orderBy($request->sort_by, $direction);
-            $header = 'Advertiser Index - sorted by ' . $request->sort_by;
+            $header = 'Advertiser Index - sorted by ' . $request->sort_by . ' (' . $direction . ')';
         } else {
             // Default sorting by updated_at if sort_by is not provided
             $query->orderBy('updated_at', 'desc');
-            $header = 'Advertiser Index - sorted by last updated';
+            $header = 'Advertiser Index - sorted by last updated (desc)';
         }
-        // select advertisers most recently added
-        $advertisers = $query->paginate(20);
-        //$advertisers = Advertiser::orderBy('created_at', 'desc')->paginate(20);
+
+        // Select advertisers with pagination
+        $advertisers = $query->paginate(30);
+
         return view('advertisers.index', compact('advertisers', 'header'));
     }
 
@@ -70,7 +69,6 @@ class AdvertiserController extends Controller
      */
     public function show(int $id)
     {
-        // ToDo - show user name for created (Last edited by already exists)
         $advertiser = Advertiser::find($id);
         $data = array(
             'header' => 'Advertiser Details',
@@ -99,7 +97,12 @@ class AdvertiserController extends Controller
         $validatedData = $this->validateAdvertiser($request);
         $advertiser = new Advertiser();
         $this->fillAdvertiser($advertiser, $validatedData, $request);
+
         $advertiser->save();
+
+        // Handle file uploads after saving the advertiser
+        $this->handleFileUploads($advertiser, $request, []);
+
         return $this->redirectAfterSave();
     }
 
@@ -107,8 +110,20 @@ class AdvertiserController extends Controller
     {
         $advertiser = Advertiser::findOrFail($id);
         $validatedData = $this->validateAdvertiser($request, false);
+
+        // Retrieve existing file paths
+        $existingFiles = [
+            'banner' => $advertiser->banner,
+            'button' => $advertiser->button,
+            'mp4' => $advertiser->mp4,
+        ];
+
         $this->fillAdvertiser($advertiser, $validatedData, $request);
         $advertiser->save();
+
+        // Handle file uploads and update or delete existing records
+        $this->handleFileUploads($advertiser, $request, $existingFiles);
+
         return $this->redirectAfterSave();
     }
 
@@ -131,11 +146,11 @@ class AdvertiserController extends Controller
             'button' => 'file|mimes:png',
         ];
 
-        $rules['contract'] = $isNew ? 'required|unique:advertisers,contract' : 'required|unique:advertisers,contract,' . $request->id;
-
         if ($isNew) {
+            $rules['contract'] = 'required|unique:advertisers,contract';
             $rules['mp4'] = 'required|file|mimes:mp4';
         } else {
+            $rules['contract'] = 'required|unique:advertisers,contract,' . $request->route('advertiser');
             $rules['mp4'] = 'nullable|file|mimes:mp4';
         }
 
@@ -166,8 +181,11 @@ class AdvertiserController extends Controller
         $advertiser->created_by = auth()->id();
         // save the advertiser
         $advertiser->save();
+    }
 
-        // Handle file uploads
+
+    private function handleFileUploads(Advertiser $advertiser, Request $request, array $existingFiles)
+    {
         $filePaths = [
             'banner' => 'banners',
             'button' => 'buttons',
@@ -181,30 +199,89 @@ class AdvertiserController extends Controller
                 $abbreviation = $field === 'banner' ? 'ban' : ($field === 'button' ? 'btn' : 'mp4');
                 $newFilename = $advertiser->contract . '_' . $abbreviation . '_' . $originalName;
 
+                // Check and update or delete existing records if the key exists
+                if (isset($existingFiles[$field])) {
+                    $this->updateOrDeleteExistingRecords($advertiser, $existingFiles[$field], $newFilename, $path);
+                }
+
+                // Store the new file
                 $storagePath = $file->storeAs('public/' . $path, $newFilename);
 
-                $upload = new Upload();
-                $upload->advertiser_id = $advertiser->id;
-                $upload->resource_type = $abbreviation;
-                $upload->resource_filename = $newFilename;
-                $upload->resource_path = $path . '/' . $newFilename;
-                $upload->is_uploaded = true;
-                $upload->uploaded_by = auth()->id();
-                $upload->uploaded_at = now();
-                $upload->save();
+                // Check if an existing upload record exists
+                $upload = Upload::where('advertiser_id', $advertiser->id)
+                    ->where('resource_type', $abbreviation)
+                    ->first();
+
+                if ($upload) {
+                    // Update the existing upload record
+                    $upload->resource_filename = $newFilename;
+                    $upload->resource_path = $path . '/' . $newFilename;
+                    $upload->save();
+                } else {
+                    // Save the new upload record
+                    $upload = new Upload();
+                    $upload->advertiser_id = $advertiser->id;
+                    $upload->resource_type = $abbreviation;
+                    $upload->resource_filename = $newFilename;
+                    $upload->resource_path = $path . '/' . $newFilename;
+                    $upload->is_uploaded = true;
+                    $upload->uploaded_by = auth()->id();
+                    $upload->uploaded_at = now();
+                    $upload->save();
+                }
 
                 // Set the file path on the advertiser model
                 $advertiser->$field = $path . '/' . $newFilename;
 
                 if (session()->has('schedule_id')) {
-                    $scheduleItem = new ScheduleItem();
-                    $scheduleItem->schedule_id = session('schedule_id');
-                    $scheduleItem->upload_id = $upload->id;
-                    $scheduleItem->advertiser_id = $advertiser->id;
-                    $scheduleItem->file = $path . '/' . $newFilename;
-                    $scheduleItem->created_by = auth()->id();
-                    $scheduleItem->save();
+                    $scheduleItem = ScheduleItem::where('advertiser_id', $advertiser->id)
+                        ->where('file', $existingFiles[$field] ?? '')
+                        ->first();
+
+                    if ($scheduleItem) {
+                        // Update the existing schedule item record
+                        $scheduleItem->file = $path . '/' . $newFilename;
+                        $scheduleItem->save();
+                    } else {
+                        // Save the new schedule item record
+                        $scheduleItem = new ScheduleItem();
+                        $scheduleItem->schedule_id = session('schedule_id');
+                        $scheduleItem->upload_id = $upload->id;
+                        $scheduleItem->advertiser_id = $advertiser->id;
+                        $scheduleItem->file = $path . '/' . $newFilename;
+                        $scheduleItem->created_by = auth()->id();
+                        $scheduleItem->save();
+                    }
                 }
+            }
+        }
+
+        // Save the advertiser model again to store the file paths
+        $advertiser->save();
+    }
+
+    private function updateOrDeleteExistingRecords(Advertiser $advertiser, $existingFile, $newFilename, $path)
+    {
+        if ($existingFile) {
+            // Update existing upload record
+            $upload = Upload::where('advertiser_id', $advertiser->id)
+                ->where('resource_path', $existingFile)
+                ->first();
+
+            if ($upload) {
+                $upload->resource_filename = $newFilename;
+                $upload->resource_path = $path . '/' . $newFilename;
+                $upload->save();
+            }
+
+            // Update existing schedule item record
+            $scheduleItem = ScheduleItem::where('advertiser_id', $advertiser->id)
+                ->where('file', $existingFile)
+                ->first();
+
+            if ($scheduleItem) {
+                $scheduleItem->file = $path . '/' . $newFilename;
+                $scheduleItem->save();
             }
         }
     }

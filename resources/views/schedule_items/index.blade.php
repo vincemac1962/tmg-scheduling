@@ -24,27 +24,35 @@
 
         @if(count($scheduleItems) > 0)
 
-            <div class="container grid grid-cols-6 gap-4 bg-gray-500 p-4">
+            <div class="container grid grid-cols-11 gap-4 bg-gray-500 p-4">
                 <div class="text-white text-md col-span-1">
                     <a href="{{ route('schedule_items.index', ['sort_by' => 'schedule_id', 'direction' => request('sort_by') == 'schedule_id' && request('direction') == 'asc' ? 'desc' : 'asc', 'filter' => request('filter')]) }}" class="transititext-primary text-primary transition duration-150 ease-in-out hover:text-primary-600 focus:text-primary-600 active:text-primary-700 dark:text-primary-400 dark:hover:text-primary-500 dark:focus:text-primary-500 dark:active:text-primary-600"
                        data-te-toggle="tooltip"
                        title="Click to sort results by Schedule TD">Schedule ID</a>
                 </div>
                 <div class="text-white text-md col-span-2">
+                    Title
+                </div>
+                <div class="text-white text-md col-span-2">
                     File
                 </div>
                 <div class="text-white text-md col-span-1">Start Date</div>
                 <div class="text-white text-md col-span-1">End Date</div>
+                <div class="text-white text-md col-span-1">Updated</div>
+                <div class="text-white text-md col-span-1">Updated</div>
             </div>
 
-            <div class="container grid grid-cols-6 gap-4 p-2">
+            <div class="container grid grid-cols-11 gap-4 p-2">
 
 
                     @foreach($scheduleItems as $item)
                         <div class="col-span-1">
                             <a href="/schedules/{{$item->schedule_id}}" class="text-blue-500 hover:text-blue-700">{{$item->schedule_id}}</a>
                         </div>
-                        <div class="col-span-2">
+                    <div class="col-span-2">
+                        {{ $item->title ? $item->title : 'N/A' }}
+                    </div>
+                        <div class="col-span-3">
                             {{$item->file}}
                         </div>
                         <div class="col-span-1">
@@ -53,8 +61,11 @@
                         <div class="col-span-1">
                             {{ Carbon\Carbon::parse($item->end_date)->format('d-m-Y') }}
                         </div>
+                        <div class="col-span-2">
+                            {{ Carbon\Carbon::parse($item->updated_at)->format('d-m-Y h:i') }}
+                        </div>
                     <div class="col-span-1">
-                        <a href="/items/{{$item->id}}"
+                        <a href="/schedule_items/{{$item->id}}"
                            class="text-blue-500 hover:text-blue-700">View</a>
                     </div>
                     @endforeach

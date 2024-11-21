@@ -36,7 +36,7 @@
                     @foreach($advertisers as $advertiser)
                         <div class="grid grid-cols-10 gap-4 p-2">
                             <div class="col-span-1">
-                                <a href="/advertisers/{{$advertiser->id}}" class="text-blue-500 hover:text-blue-700">{{$advertiser->contract}}</a>
+                                {{$advertiser->contract}}
                             </div>
                             <div class="col-span-4">
                                 {{$advertiser->business_name}}

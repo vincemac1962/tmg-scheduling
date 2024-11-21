@@ -45,11 +45,11 @@ Route::post('/schedules/{schedule}/associate-sites', [ScheduleController::class,
 // show associated sites for schedule
 Route::get('/schedules/{schedule}/associated-sites', [ScheduleController::class, 'showAssociatedSites'])->name('schedules.associatedSites');
 // remove associated site from schedule
-Route::delete('schedules/{schedule}/remove-site/{site}', [ScheduleController::class, 'removeAssociatedSite'])->name('schedules.removeSite');
+Route::delete('/schedules/{schedule}/remove-site/{site}', [ScheduleController::class, 'removeAssociatedSite'])->name('schedules.removeSite');
 // Schedules resource route
-Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
+Route::resource('/schedules', App\Http\Controllers\ScheduleController::class);
 // Schedule Items resource route
-Route::resource('schedule_items', App\Http\Controllers\ScheduleItemController::class);
+Route::resource('/schedule_items', App\Http\Controllers\ScheduleItemController::class);
 
 // get list of existing advertisers
 Route::get('/advertisers/select', [AdvertiserController::class, 'selectExisting'])->name('advertisers.select');
@@ -58,7 +58,7 @@ Route::post('/schedule/addSelectedAdvertisers', [ScheduleController::class, 'add
 // create and advertiser without a schedule id
 Route::get('/advertisers/create-no-schedule', [AdvertiserController::class, 'createNoScheduleId'])->name('advertisers.createNoScheduleId');
 // Advertiser resource route
-Route::resource('advertisers', App\Http\Controllers\AdvertiserController::class);
+Route::resource('/advertisers', App\Http\Controllers\AdvertiserController::class);
 
 
 require __DIR__.'/auth.php';

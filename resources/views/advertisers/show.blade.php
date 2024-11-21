@@ -9,9 +9,8 @@
         <p><strong>Business Name: </strong>{{$advertiser->business_name}}</p>
         <p><strong>City: </strong>{{$advertiser->city}}</p>
         <p><strong>Country: </strong>{{$advertiser->country}}</p>
-        <p><strong>Created By: </strong>{{$advertiser->created_by}}</p>
+        <p><strong>Created By: </strong>{{$advertiser->creator->name}}</p>
         <p><strong>Last Modified: </strong>{{$advertiser->updated_at->format('d/m/Y H:i') }}</p>
-        <p><strong>Last Edited By: </strong>{{$advertiser->creator->name}}</p>
         <hr>
         <div class="flex justify-center mt-4">
             <a href="javascript:void(0)" onclick="history.back()" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Back</a>

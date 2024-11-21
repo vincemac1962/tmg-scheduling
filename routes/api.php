@@ -40,6 +40,12 @@ Route::middleware('log.route')->group(function () {
     // Route to register site for content
     Route::post('/register-content', [ApiSiteController::class, 'registerSite']);
 
+    // Route to log site update
+    Route::post('/log-site-update', [ApiSiteController::class, 'logSiteUpdate']);
+
+    // Route to update last contact status of site
+    Route::post('/update-last-contact', [ApiSiteController::class, 'updateSiteLastContact']);
+
 
 });
 

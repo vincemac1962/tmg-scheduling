@@ -45,7 +45,7 @@
                         @csrf
                         @foreach($sites as $site)
                             <div class="col-span-1">
-                                <a href="/sites/{{$site->id}}" class="text-blue-500 hover:text-blue-700">{{$site->site_ref}}</a>
+                                {{$site->site_ref}}
                             </div>
                             <div class="col-span-2">
                                 {{$site->site_name}}

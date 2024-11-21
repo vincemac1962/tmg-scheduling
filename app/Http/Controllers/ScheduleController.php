@@ -28,7 +28,6 @@ class ScheduleController extends Controller
 
     public function index(Request $request)
     {
-        // Unset the session variable
         session()->forget('schedule_id');
 
         // Check if the user wants to view all schedules
@@ -43,25 +42,27 @@ class ScheduleController extends Controller
             $query->havingRaw('downloaded_sites_count < sites_count OR sites_count = 0');
         }
 
-        $schedules = $query->paginate(10);
+        // Filtering by title
+        if ($request->has('filter')) {
+            $query->where('title', 'like', '%' . $request->input('filter') . '%');
+        }
 
-        $header = 'Schedules Index';
+        // Sorting
+        if ($request->has('sort_by') && in_array($request->sort_by, ['id', 'title', 'updated_at'])) {
+            $direction = $request->direction ?? 'asc';
+            $query->orderBy($request->sort_by, $direction);
+            $header = 'Schedules - sorted by ' . $request->sort_by . ' (' . $direction . ')';
+        } else {
+            // Default sorting by updated_at if sort_by is not provided
+            $query->orderBy('updated_at', 'desc');
+            $header = 'Schedules - sorted by last updated (desc)';
+        }
+
+        // Select schedules
+        $schedules = $query->paginate(20);
 
         return view('schedules.index', compact('schedules', 'header', 'viewAll'));
     }
-    /*public function index(Request $request)
-    {
-        // unset the session variable
-        session()->forget('schedule_id');
-
-        $query = Schedule::query();
-
-        $schedules = $query->paginate(10);
-
-        $header = 'Schedules Index';
-
-        return view('schedules.index', compact('schedules', 'header'));
-    }*/
 
     public function show($id)
     {
