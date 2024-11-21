@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-span-1">
                                 <label for="advertiser_ids[]"></label>
-                                <input type="checkbox" name="advertiser_ids[]" value="{{$advertiser->id}}">
+                                <input type="checkbox" id="advertiser_ids[]" name="advertiser_ids[]" value="{{$advertiser->id}}">
                             </div>
                         </div>
                     @endforeach

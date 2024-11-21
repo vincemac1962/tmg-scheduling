@@ -8,7 +8,7 @@
         <form method="GET" action="{{ route('schedules.index') }}" class="mb-4">
             <div class="flex items-center">
                 <label for="filter" class="mr-2"></label>
-                <input type="text" name="filter" placeholder="Filter schedules..." class="border p-2 mr-2">
+                <input type="text" id="filter" name="filter" placeholder="Filter schedules..." class="border p-2 mr-2">
                 <label class="mr-2">
                     <input type="checkbox" name="view_all" value="1" {{ request('view_all') ? 'checked' : '' }}>
                     View All
