@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 namespace App\Http\Controllers\Auth;
 

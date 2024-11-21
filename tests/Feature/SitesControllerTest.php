@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace Tests\Feature;
 
@@ -27,11 +27,6 @@ class SitesControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user);
-
-        // Create some sites
-        $site1 = Site::factory()->create(['site_ref' => 'AA', 'site_name' => 'Site A']);
-        $site2 = Site::factory()->create(['site_ref' => 'BB', 'site_name' => 'Site B']);
-        $site3 = Site::factory()->create(['site_ref' => 'CC', 'site_name' => 'Site C']);
 
         // Test filtering
         $response = $this->get('/sites?filter=AA');

@@ -21,7 +21,7 @@ class ScheduleItemFactory extends Factory
 
         return [
             'title' => $this->faker->sentence,
-            'description' => substr($this->faker->paragraph(3, true), 0, 255),
+            'description' => substr($this->faker->paragraph(), 0, 255),
             'start_date' => $startDate,
             'end_date' => $this->faker->dateTimeBetween($startDate, '+12 months'),
             // 'schedule_id', 'upload_id', 'advertiser_id', 'file', 'uploaded_by' will be assigned in the seeder

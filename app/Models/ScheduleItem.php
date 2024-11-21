@@ -20,7 +20,7 @@ class ScheduleItem extends Model
         'created_by',
     ];
 
-    protected $dates = [
+    protected array $dates = [
         'start_date',
         'end_date',
     ];

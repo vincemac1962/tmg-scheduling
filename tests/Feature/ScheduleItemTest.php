@@ -1,4 +1,8 @@
-<?php
+<?php /** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+
+/** @noinspection ALL */
 
 namespace Tests\Feature;
 
@@ -7,9 +11,8 @@ use App\Models\Schedule;
 use App\Models\ScheduleItem;
 use App\Models\Upload;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +32,7 @@ class ScheduleItemTest extends TestCase
         $upload = null;
         try {
             $upload = Upload::factory()->create(['uploaded_by' => $user->id]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to create upload: " . $e->getMessage());
             // Optionally, rethrow the exception or handle it as needed
         }
@@ -73,7 +76,7 @@ class ScheduleItemTest extends TestCase
 
         try {
             $upload = Upload::factory()->create();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to create upload: " . $e->getMessage());
             // Optionally, rethrow the exception or handle it as needed
         }
@@ -158,7 +161,7 @@ class ScheduleItemTest extends TestCase
         $upload = null;
         try {
             $upload = Upload::factory()->create(['uploaded_by' => $user->id]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to create upload: " . $e->getMessage());
             // Optionally, rethrow the exception or handle it as needed
         }

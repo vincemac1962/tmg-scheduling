@@ -1,10 +1,10 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
+
+/** @noinspection PhpSwitchCanBeReplacedWithMatchExpressionInspection */
 
 namespace Tests\Feature;
 
 use App\Models\Upload;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Faker\Factory as Faker;
 

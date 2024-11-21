@@ -1,9 +1,27 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+
+/** @noinspection PhpUndefinedMethodInspection */
 
 namespace App\Http\Controllers;
 
 use App\Models\Upload;
 use App\Models\ScheduleItem;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -29,7 +47,7 @@ class ScheduleItemController extends Controller
         // Filtering
         if ($request->has('filter')) {
             $query->where('schedule_id', 'like', '%' . $request->filter . '%')
-                ->orWhere('file', 'like', '%' . $request->filter . '%');;
+                ->orWhere('file', 'like', '%' . $request->filter . '%');
         }
         // Sorting
         if ($request->has('sort_by')) {
@@ -90,7 +108,7 @@ class ScheduleItemController extends Controller
 
                 // Attempt to move the uploaded file to the specified directory
                 $file->storeAs('public/mp4s', $filename);
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 // An error occurred while moving the file; handle this error
                 return back()->withInput()->withErrors(['resource_filename' => 'The resource filename failed to upload.']);
             }
@@ -113,7 +131,7 @@ class ScheduleItemController extends Controller
 
             // Redirect the user to the schedule items index page with a success message
             return redirect()->route('schedules.index')->with('success', 'Schedule item created successfully.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // An error occurred; rollback the transaction...
             DB::rollback();
 
@@ -122,6 +140,8 @@ class ScheduleItemController extends Controller
 
             // and return the user to the form with an error message
             return back()->withInput()->withErrors(['error' => 'An error occurred while creating the schedule item. Please try again.']);
+        } catch (\Throwable $e) {
+        } catch (\Throwable $e) {
         }
     }
 

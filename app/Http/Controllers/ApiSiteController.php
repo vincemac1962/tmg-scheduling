@@ -95,7 +95,7 @@ class ApiSiteController extends Controller
                 'site_last_updated' => now(),
             ]);
 
-        return response()->json(['message' => 'Site updated successfully'], 200);
+        return response()->json(['message' => 'Site updated successfully']);
     }
 
     // update site table site_last_contact
@@ -116,7 +116,7 @@ class ApiSiteController extends Controller
                 'site_last_contact' => now(),
             ]);
 
-        return response()->json(['message' => 'Site last contact updated successfully'], 200);
+        return response()->json(['message' => 'Site last contact updated successfully']);
     }
 
 }

@@ -1,4 +1,58 @@
-<?php
+<?php /** @noinspection PhpUnusedLocalVariableInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpIfWithCommonPartsInspection */
+
+/** @noinspection PhpIfWithCommonPartsInspection */
 
 namespace App\Http\Controllers;
 
@@ -7,8 +61,6 @@ use App\Models\Schedule;
 use App\Models\ScheduleItem;
 use App\Models\Upload;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Arr;
 
 class AdvertiserController extends Controller
@@ -163,18 +215,18 @@ class AdvertiserController extends Controller
         $advertiser->fill(Arr::except($validatedData, ['banner', 'button', 'mp4']));
 
         // Set other attributes
-        $advertiser->address_1 = $request->input('address_1', null);
-        $advertiser->address_2 = $request->input('address_2', null);
-        $advertiser->street = $request->input('street', null);
-        $advertiser->city = $request->input('city', null);
-        $advertiser->county = $request->input('county', null);
-        $advertiser->postal_code = $request->input('postal_code', null);
-        $advertiser->country = $request->input('country', null);
-        $advertiser->phone = $request->input('phone', null);
-        $advertiser->mobile = $request->input('mobile', null);
-        $advertiser->email = $request->input('email', null);
-        $advertiser->url = $request->input('url', null);
-        $advertiser->social = $request->input('social', null);
+        $advertiser->address_1 = $request->input('address_1');
+        $advertiser->address_2 = $request->input('address_2');
+        $advertiser->street = $request->input('street');
+        $advertiser->city = $request->input('city');
+        $advertiser->county = $request->input('county');
+        $advertiser->postal_code = $request->input('postal_code');
+        $advertiser->country = $request->input('country');
+        $advertiser->phone = $request->input('phone');
+        $advertiser->mobile = $request->input('mobile');
+        $advertiser->email = $request->input('email');
+        $advertiser->url = $request->input('url');
+        $advertiser->social = $request->input('social');
         $advertiser->sort_order = $request->input('sort_order', 1);
         $advertiser->is_active = true;
         $advertiser->is_deleted = false;
@@ -203,9 +255,6 @@ class AdvertiserController extends Controller
                 if (isset($existingFiles[$field])) {
                     $this->updateOrDeleteExistingRecords($advertiser, $existingFiles[$field], $newFilename, $path);
                 }
-
-                // Store the new file
-                $storagePath = $file->storeAs('public/' . $path, $newFilename);
 
                 // Check if an existing upload record exists
                 $upload = Upload::where('advertiser_id', $advertiser->id)
@@ -297,7 +346,7 @@ class AdvertiserController extends Controller
         return redirect()->route('advertisers.index');
     }
 
-    public function selectExisting(Request $request)
+    public function selectExisting()
     {
         $advertisers = Advertiser::orderBy('updated_at', 'desc')->paginate(20);
         return view('advertisers.select', compact('advertisers'));

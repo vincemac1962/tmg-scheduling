@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 
 namespace App\Http\Middleware;
 
@@ -11,15 +11,15 @@ class HandlePostTooLargeException
     /**
      * Handle an incoming request.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         try {
             return $next($request);
-        } catch (PostTooLargeException $e) {
+        } catch (PostTooLargeException) {
             return redirect()->back()->withErrors(['file' => 'The uploaded file is too large.']);
         }
     }

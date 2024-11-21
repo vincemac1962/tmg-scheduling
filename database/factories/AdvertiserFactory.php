@@ -1,11 +1,13 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
+/** @noinspection PhpUndefinedMethodInspection */
 
 namespace Database\Factories;
 
 use App\Models\Advertiser;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Faker\Generator as Faker;
 
 /**
  * @extends Factory<Advertiser>

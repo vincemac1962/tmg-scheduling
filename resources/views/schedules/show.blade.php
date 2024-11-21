@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!--suppress JSDeprecatedSymbols -->
     <div class="mx-auto mb-16 px-4 max-w-screen-lg">
         <h1 class="mt-5 text-2xl">Schedule</h1>
         <p><strong>ID: </strong>{{$schedule->id}}</p>

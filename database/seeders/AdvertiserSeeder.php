@@ -1,10 +1,11 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
+
+/** @noinspection PhpDocSignatureInspection */
 
 namespace Database\Seeders;
 
 use App\Models\Upload;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Advertiser;
 use Faker\Factory as Faker;

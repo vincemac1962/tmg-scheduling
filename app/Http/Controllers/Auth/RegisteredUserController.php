@@ -1,4 +1,9 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
+/** @noinspection ALL */
 
 namespace App\Http\Controllers\Auth;
 

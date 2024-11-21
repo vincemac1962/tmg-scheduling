@@ -1,7 +1,20 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
+/** @noinspection PhpDocRedundantThrowsInspection */
 
 namespace App\Http\Controllers;
 
+use DB;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -9,7 +22,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Site;
-use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 
@@ -49,7 +61,7 @@ class SitesController extends Controller
     public function indexForSelection(Request $request, $schedule_id)
     {
         // Retrieve the IDs of the sites already associated with the schedule
-        $associatedSiteIds = \DB::table('schedule_site')
+        $associatedSiteIds = DB::table('schedule_site')
             ->where('schedule_id', $schedule_id)
             ->pluck('site_id')
             ->toArray();
@@ -162,10 +174,10 @@ class SitesController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return RedirectResponse
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, int $id): RedirectResponse
     {
         // validate form data
         $this->validateSite($request);
@@ -194,10 +206,10 @@ class SitesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $site = Site::find($id);
         $site->delete();
@@ -206,10 +218,14 @@ class SitesController extends Controller
     }
 
     private function validateSite($request) {
-        $this->validate($request, [
-            'site_ref' => 'required',
-            'site_name' => 'required'
-        ]);
+        try {
+            $this->validate($request, [
+                'site_ref' => 'required',
+                'site_name' => 'required'
+            ]);
+        } catch (ValidationException $e) {
+            echo $e->getMessage();
+        }
     }
 
 

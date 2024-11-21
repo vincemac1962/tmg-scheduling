@@ -27,7 +27,7 @@ class ApiScheduleController extends Controller
 
         // Check if any schedules are found
         if ($schedules->isEmpty()) {
-            return response()->json(['message' => 'No schedules available for download.'], 200);
+            return response()->json(['message' => 'No schedules available for download.']);
         }
 
         $scheduleItems = collect();

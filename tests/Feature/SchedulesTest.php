@@ -2,13 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\ScheduleItem;
 use App\Models\Site;
-use App\Models\Upload;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Schedule;
 

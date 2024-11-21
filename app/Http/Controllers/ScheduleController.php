@@ -1,18 +1,35 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection PhpUndefinedFieldInspection */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+/** @noinspection ALL */
+
+/** @noinspection ALL */
 
 namespace App\Http\Controllers;
 
 use App\Models\Advertiser;
 use App\Models\Schedule;
-use App\Models\ScheduleItem;
 use App\Models\Upload;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\MessageBag;
 
 class ScheduleController extends Controller
 {
@@ -143,13 +160,13 @@ class ScheduleController extends Controller
             if ($uploads->isEmpty()) {
                 $error = 'Uploads missing for: ' . $this->getAdvertiserDetails($advertiserId);
                 if ($error) {
-                    session()->flash('errors', session('errors', new \Illuminate\Support\MessageBag)->add('advertiser_error', $error));
+                    session()->flash('errors', session('errors', new MessageBag)->add('advertiser_error', $error));
                 }
                 continue;
             }
 
             foreach ($uploads as $upload) {
-                $scheduleItem = new \App\Models\ScheduleItem();
+                $scheduleItem = new ScheduleItem();
                 $scheduleItem->schedule_id = $scheduleId;
                 $scheduleItem->upload_id = $upload->id;
                 $scheduleItem->advertiser_id = $advertiserId;

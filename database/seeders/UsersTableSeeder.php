@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace Database\Seeders;
 
@@ -27,6 +27,7 @@ class UsersTableSeeder extends Seeder
 
         $faker = Faker::create();
 
+        /** @noinspection PhpUnusedLocalVariableInspection */
         foreach (range(1,10) as $index) {
             DB::table('users')->insert([
                 'name' => $faker->name,

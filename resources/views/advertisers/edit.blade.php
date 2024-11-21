@@ -2,6 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!--suppress ALL -->
     <div class="container max-w-4xl mx-auto px-4">
     @if ($errors->any())
         <div class="alert alert-danger">

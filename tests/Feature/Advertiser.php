@@ -1,10 +1,11 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
+
+/** @noinspection PhpUndefinedMethodInspection */
 
 namespace Tests\Feature;
 
 use App\Models\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -52,9 +53,6 @@ class Advertiser extends TestCase
         // Make a POST request to the route handling the store() method and pass the data
         $response = $this->post(route('advertisers.store'), $advertiserData);
 
-        // Retrieve the created advertiser from the database
-        $createdAdvertiser = \App\Models\Advertiser::where('contract', '12345')->first();
-
         // Assert the response is a redirect to the expected route (adjust as necessary)
         //$response->assertRedirect(route('schedules.show', ['schedule' => $schedule->id]));
         $response->assertRedirect(route('advertisers.index'));
@@ -99,9 +97,6 @@ class Advertiser extends TestCase
 
         // Make a POST request to the route handling the store() method and pass the data
         $response = $this->post(route('advertisers.store'), $advertiserData);
-
-        // Retrieve the created advertiser from the database
-        $createdAdvertiser = \App\Models\Advertiser::where('contract', '12345')->first();
 
         // Assert the response is a redirect to the expected route (adjust as necessary)
         //$response->assertRedirect(route('schedules.show', ['schedule' => $schedule->id]));

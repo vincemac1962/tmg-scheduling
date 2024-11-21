@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpDocRedundantThrowsInspection */
+
+/** @noinspection PhpFullyQualifiedNameUsageInspection */
 
 namespace App\Http\Controllers\Auth;
 

@@ -1,4 +1,7 @@
-<?php
+<?php /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+
+/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 
 namespace App\Http\Middleware;
 
