@@ -7,6 +7,7 @@
         <!-- Filter Form -->
         <form method="GET" action="{{ route('schedules.index') }}" class="mb-4">
             <div class="flex items-center">
+                <label for="filter" class="mr-2"></label>
                 <input type="text" name="filter" placeholder="Filter schedules..." class="border p-2 mr-2">
                 <label class="mr-2">
                     <input type="checkbox" name="view_all" value="1" {{ request('view_all') ? 'checked' : '' }}>
@@ -37,7 +38,7 @@
                         </a>
                     </th>
                     <th class="py-2 px-4 border-b text-center text-white text-md">
-                        <a href="{{ route('schedules.index', ['sort_by' => 'updated_at', 'direction' => request('sort_by') == 'updated_at' && request('direction') == 'asc' ? 'desc' : 'asc', 'filter' => request('filter')]) }}"data-te-toggle="tooltip"
+                        <a href="{{ route('schedules.index', ['sort_by' => 'updated_at', 'direction' => request('sort_by') == 'updated_at' && request('direction') == 'asc' ? 'desc' : 'asc', 'filter' => request('filter')]) }}" data-te-toggle="tooltip"
                            title="Click to sort results by Updated At">Updated At &nbsp&#9432;
                         </a>
                     </th>

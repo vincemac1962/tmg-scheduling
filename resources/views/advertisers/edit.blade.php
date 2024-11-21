@@ -22,7 +22,7 @@
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="business_name" class="w-1/4 text-left mr-2">Business:</label>
-            <input type="text" id="business_name" name="business_name" class="form-control w-3/4" value="{{ $advertiser->business_name }}"required>
+            <input type="text" id="business_name" name="business_name" class="form-control w-3/4" value="{{ $advertiser->business_name }}" required>
         </div>
         <div class="flex justify-between items-center mt-3">
             <label for="address_1" class="w-1/4 text-left mr-2">Address (1):</label>
@@ -107,7 +107,7 @@
             </label>
         </div>
 
-        <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
+        <input type="hidden" id="created_by" name="created_by" value="{{ auth()->user()->id ?? '' }}">
         <input type="hidden" id="schedule_id" name="schedule_id" value="{{ session('schedule_id') }}">
 
 

@@ -105,7 +105,7 @@
                 <span class="ml-2">{{ basename($advertiser->mp4) }}</span>
             @endisset
         </div>
-        <input type="hidden" id="created_by" name="created_by" value="{{ auth()->check() ? auth()->user()->id : '' }}">
+        <input type="hidden" id="created_by" name="created_by" value="{{ auth()->user()->id ?? '' }}">
         @if(isset($schedule->id))
             <input type="hidden" id="schedule_id" name="schedule_id" value="{{ $schedule->id }}">
         @endif

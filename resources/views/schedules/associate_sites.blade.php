@@ -59,6 +59,7 @@
                                     </span>
                             </div>
                             <div class="col-span-1">
+                            <label for ="sites[]"></label>
                             <input type="checkbox" name="sites[]" value="{{ $site->id }}">
                             </div>
                     @endforeach
