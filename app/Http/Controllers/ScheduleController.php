@@ -23,6 +23,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Advertiser;
 use App\Models\Schedule;
+use App\Models\ScheduleItem;
 use App\Models\Upload;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;

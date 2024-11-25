@@ -1,21 +1,5 @@
 <?php /** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
-/** @noinspection PhpUndefinedFieldInspection */
 
-/** @noinspection PhpUndefinedMethodInspection */
 
 namespace App\Http\Controllers;
 
@@ -31,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ScheduleItemController extends Controller
 {
@@ -140,8 +125,8 @@ class ScheduleItemController extends Controller
 
             // and return the user to the form with an error message
             return back()->withInput()->withErrors(['error' => 'An error occurred while creating the schedule item. Please try again.']);
-        } catch (\Throwable $e) {
-        } catch (\Throwable $e) {
+        } catch (Throwable) {
+            echo 'Errors generated';
         }
     }
 
