@@ -45,6 +45,7 @@
                     <th class="py-2 px-4 border-b text-center text-white text-md">Created At</th>
                     <th class="py-2 px-4 border-b text-center text-white text-md">Created By</th>
                     <th class="py-2 px-4 border-b text-center text-white text-md">Sites (Downloaded/Total)</th>
+                    <th class="py-2 px-4 border-b text-center text-white text-md">View Details</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -60,6 +61,7 @@
                         <td class="py-2 px-4 border-b text-center {{ ($schedule->downloaded_sites_count < $schedule->sites_count || $schedule->sites_count == 0) ? 'text-red-500' : 'text-green-500' }}">
                             {{ $schedule->downloaded_sites_count ?? 0 }}/{{ $schedule->sites_count ?? 0 }}
                         </td>
+                        <td><a href="{{ route('schedules.viewDetails', $schedule->id) }}">View Details</a></td>
                     </tr>
                 @endforeach
                 </tbody>

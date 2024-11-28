@@ -24,7 +24,8 @@ class Schedule extends Model
     public function sites()
     {
         return $this->belongsToMany(Site::class, 'schedule_site', 'schedule_id', 'site_id')
-            ->withPivot('downloaded', 'downloaded_at');
+            ->withPivot('downloaded', 'downloaded_at')
+            ->select('sites.id', 'sites.site_name');
     }
 
 
@@ -32,6 +33,11 @@ class Schedule extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(ScheduleItem::class);
     }
 
 }

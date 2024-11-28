@@ -251,6 +251,9 @@ class AdvertiserController extends Controller
                 $abbreviation = $field === 'banner' ? 'ban' : ($field === 'button' ? 'btn' : 'mp4');
                 $newFilename = $advertiser->contract . '_' . $abbreviation . '_' . $originalName;
 
+                // Save the file to the appropriate folder
+                $file->storeAs($path, $newFilename, 'public');
+
                 // Check and update or delete existing records if the key exists
                 if (isset($existingFiles[$field])) {
                     $this->updateOrDeleteExistingRecords($advertiser, $existingFiles[$field], $newFilename, $path);

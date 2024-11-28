@@ -216,6 +216,14 @@ class ScheduleController extends Controller
         return redirect()->route('schedules.associatedSites', $scheduleId);
     }
 
+    // view extended schedule details
+    public function viewDetails($id)
+    {
+        $schedule = Schedule::with(['creator', 'sites', 'items'])->findOrFail($id);
+
+        return view('schedules.details', compact('schedule'));
+    }
+
 
 
 

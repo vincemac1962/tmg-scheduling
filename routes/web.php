@@ -50,6 +50,8 @@ Route::delete('/schedules/{schedule}/remove-site/{site}', [ScheduleController::c
 Route::resource('/schedules', App\Http\Controllers\ScheduleController::class);
 // Schedule Items resource route
 Route::resource('/schedule_items', App\Http\Controllers\ScheduleItemController::class);
+// Schedule details report
+Route::get('/schedules/{schedule}/details', [ScheduleController::class, 'viewDetails'])->name('schedules.viewDetails');
 
 // get list of existing advertisers
 Route::get('/advertisers/select', [AdvertiserController::class, 'selectExisting'])->name('advertisers.select');
