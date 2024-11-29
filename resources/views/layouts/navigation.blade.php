@@ -70,6 +70,16 @@
                             <!-- Add more links for other routes here -->
                         </x-slot>
                     </x-dropdown>
+                    <x-dropdown align="right" width="48" :active="request()->routeIs('items.*')">
+                        <x-slot name="trigger">
+                            <span class="py-1 bg-white dark:bg-gray-700 text-sm leading-5">{{ __('Users') }}</span>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('users.index')">
+                                {{ __('Manage Users') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
                 </div>
             </div>
 

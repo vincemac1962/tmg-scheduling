@@ -6,6 +6,7 @@ use App\Http\Controllers\AdvertiserController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SitesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,9 @@ Route::post('/schedule/addSelectedAdvertisers', [ScheduleController::class, 'add
 Route::get('/advertisers/create-no-schedule', [AdvertiserController::class, 'createNoScheduleId'])->name('advertisers.createNoScheduleId');
 // Advertiser resource route
 Route::resource('/advertisers', App\Http\Controllers\AdvertiserController::class);
+// User resource route
+Route::resource('users', UserController::class);
+
 
 
 require __DIR__.'/auth.php';
